@@ -1,9 +1,11 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
-VisualStudioVersion = 17.12.35506.116 d17.12
+VisualStudioVersion = 17.12.35506.116
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Shenam.API", "Shenam.API\Shenam.API.csproj", "{892BD88A-B6A1-4584-92A9-2B4498679259}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Shenam.Api.Tests.Unit", "Shenam.Api.Tests.Unit\Shenam.Api.Tests.Unit.csproj", "{9F66E946-3B3F-4F68-BD1A-6D0223DF478E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +17,10 @@ Global
 		{892BD88A-B6A1-4584-92A9-2B4498679259}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{892BD88A-B6A1-4584-92A9-2B4498679259}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{892BD88A-B6A1-4584-92A9-2B4498679259}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9F66E946-3B3F-4F68-BD1A-6D0223DF478E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9F66E946-3B3F-4F68-BD1A-6D0223DF478E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9F66E946-3B3F-4F68-BD1A-6D0223DF478E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9F66E946-3B3F-4F68-BD1A-6D0223DF478E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
