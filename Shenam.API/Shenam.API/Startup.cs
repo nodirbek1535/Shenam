@@ -7,6 +7,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
+using Shenam.API.Brokers.Storages;
 using System;
 
 namespace Shenam.API
@@ -26,7 +27,7 @@ namespace Shenam.API
                 Title = "Shenam.API",
                 Version = "v1"
             };
-
+            services.AddDbContext<StorageBroker>();
             services.AddControllers();
 
             services.AddSwaggerGen(options =>
