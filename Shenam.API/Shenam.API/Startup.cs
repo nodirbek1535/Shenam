@@ -8,7 +8,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
 using Shenam.API.Brokers.Storages;
-using System;
 
 namespace Shenam.API
 {
