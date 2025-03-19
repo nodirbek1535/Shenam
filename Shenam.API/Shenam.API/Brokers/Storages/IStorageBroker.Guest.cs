@@ -2,9 +2,8 @@
 //NODIRBEKNING MOHIRDEV PLATFORMASIDA ORGANGAN API SINOV LOYIHASI
 //===============================================================
 
-using Microsoft.EntityFrameworkCore.Storage;
-using Shenam.API.Models.Foundation.Guests;
 using System.Threading.Tasks;
+using Shenam.API.Models.Foundation.Guests;
 
 namespace Shenam.API.Brokers.Storages
 {

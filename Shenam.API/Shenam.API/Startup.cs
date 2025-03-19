@@ -33,8 +33,8 @@ namespace Shenam.API
             services.AddSwaggerGen(options =>
             {
                 options.SwaggerDoc(
-                    name:"v1", 
-                    info:apiinfo);
+                    name: "v1",
+                    info: apiinfo);
             });
         }
         public void Configure(IApplicationBuilder app, IWebHostEnvironment envirovment)
@@ -49,14 +49,14 @@ namespace Shenam.API
                     options.SwaggerEndpoint(
                     url: "/swagger/v1/swagger.json",
                     name: "Shenam.API v1");
-                });                
+                });
             }
 
             app.UseHttpsRedirection();
             app.UseRouting();
             app.UseAuthorization();
 
-            app.UseEndpoints(endpoints =>            
+            app.UseEndpoints(endpoints =>
                 endpoints.MapControllers());
         }
     }
