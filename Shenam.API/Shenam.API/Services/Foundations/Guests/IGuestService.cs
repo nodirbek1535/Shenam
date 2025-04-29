@@ -1,11 +1,14 @@
 ﻿//===============================================================
 //NODIRBEKNING MOHIRDEV PLATFORMASIDA ORGANGAN API SINOV LOYIHASI
 //===============================================================
-namespace Shenam.Api.Tests.Unit
+
+using System.Threading.Tasks;
+using Shenam.API.Models.Foundation.Guests;
+
+namespace Shenam.API.Services.Foundations.Guests
 {
-    public class DeleteME
+    public interface IGuestService
     {
-        [Fact]
-        public void ShouldBeTrue() => Assert.True(true);
+        ValueTask<Guest> AddGuestAsync(Guest guest);
     }
 }

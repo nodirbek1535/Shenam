@@ -2,10 +2,10 @@
 //NODIRBEKNING MOHIRDEV PLATFORMASIDA ORGANGAN API SINOV LOYIHASI
 //===============================================================
 
+using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Shenam.API.Models.Foundation.Guests;
-using System.Threading.Tasks;
 
 namespace Shenam.API.Brokers.Storages
 {
@@ -17,7 +17,7 @@ namespace Shenam.API.Brokers.Storages
         {
             using var broker = new StorageBroker(this.configuration);
 
-            EntityEntry<Guest> guestEntityEntry = 
+            EntityEntry<Guest> guestEntityEntry =
                 await broker.Guests.AddAsync(guest);
             await broker.SaveChangesAsync();
 

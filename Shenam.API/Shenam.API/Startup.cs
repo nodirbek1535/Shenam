@@ -52,14 +52,14 @@ namespace Shenam.API
                     options.SwaggerEndpoint(
                     url: "/swagger/v1/swagger.json",
                     name: "Shenam.API v1");
-                });                
+                });
             }
 
             app.UseHttpsRedirection();
             app.UseRouting();
             app.UseAuthorization();
 
-            app.UseEndpoints(endpoints =>            
+            app.UseEndpoints(endpoints =>
                 endpoints.MapControllers());
         }
         private static void AddBrokers(IServiceCollection services)
