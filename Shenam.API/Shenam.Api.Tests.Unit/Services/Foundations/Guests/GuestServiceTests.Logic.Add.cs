@@ -2,6 +2,7 @@
 //NODIRBEKNING MOHIRDEV PLATFORMASIDA ORGANGAN API SINOV LOYIHASI
 //===============================================================
 
+using System.Diagnostics;
 using FluentAssertions;
 using Force.DeepCloner;
 using Moq;
@@ -63,6 +64,7 @@ namespace Shenam.Api.Tests.Unit.Services.Foundations.Guests
             Times.Once);
 
             this.storageBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
         }
     }
 }
