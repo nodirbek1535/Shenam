@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Shenam.API.Brokers.loggings;
 using Shenam.API.Brokers.Storages;
 using Shenam.API.Models.Foundation.Guests;
+using Shenam.API.Models.Foundation.Guests.Exceptions;
 
 namespace Shenam.API.Services.Foundations.Guests
 {
@@ -25,7 +26,25 @@ namespace Shenam.API.Services.Foundations.Guests
 
         public async ValueTask<Guest> AddGuestAsync(Guest guest)
         {
-            return await this.storageBroker.InsertGuestAsync(guest);
+            try
+            {
+                if (guest is null)
+                {
+                    throw new NullGuestException();
+                }
+
+
+                return await this.storageBroker.InsertGuestAsync(guest);
+            }
+            catch (NullGuestException nullGuestException)
+            {
+                var guestValidationException =
+                    new GuestValidationException(nullGuestException);
+
+                this.loggingBroker.LogError(guestValidationException);
+
+                throw guestValidationException;
+            }
         }
  
     }
