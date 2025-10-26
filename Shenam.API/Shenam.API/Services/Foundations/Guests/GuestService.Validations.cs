@@ -17,12 +17,14 @@ namespace Shenam.API.Services.Foundations.Guests
             ValidateGuestNotNull(guest);
 
             Validate(
-                    (Rule: Isinvalid(guest.Id), Parameter: nameof(Guest.Id)),
-                    (Rule: Isinvalid(guest.FirstName), Parameter: nameof(Guest.FirstName)),
-                    (Rule: Isinvalid(guest.LastName), Parameter: nameof(Guest.LastName)),
-                    (Rule: Isinvalid(guest.DateOfBirth), Parameter: nameof(Guest.DateOfBirth)),
-                    (Rule: Isinvalid(guest.Email), Parameter: nameof(Guest.Email)),
-                    (Rule: Isinvalid(guest.Address), Parameter: nameof(Guest.Address))
+                    (Rule: IsInvalid(guest.Id), Parameter: nameof(Guest.Id)),
+                    (Rule: IsInvalid(guest.FirstName), Parameter: nameof(Guest.FirstName)),
+                    (Rule: IsInvalid(guest.LastName), Parameter: nameof(Guest.LastName)),
+                    (Rule: IsInvalid(guest.DateOfBirth), Parameter: nameof(Guest.DateOfBirth)),
+                    (Rule: IsInvalid(guest.Email), Parameter: nameof(Guest.Email)),
+                    (Rule: IsInvalid(guest.Address), Parameter: nameof(Guest.Address)),
+                    (Rule: IsInvalid(guest.Gender), Parameter: nameof(Guest.Gender))
+
                     );
 
         }
@@ -34,24 +36,31 @@ namespace Shenam.API.Services.Foundations.Guests
             }
         }
 
-        private static dynamic Isinvalid(Guid id) => new
+        private static dynamic IsInvalid(Guid id) => new
         {
             Condition = id == Guid.Empty,
             Message = "Id is required"
         };
 
 
-        private static dynamic Isinvalid(string text) => new
+        private static dynamic IsInvalid(string text) => new
         {
             Condition = string.IsNullOrWhiteSpace(text),
             Message = "Text is required"
         };
 
-        private static dynamic Isinvalid(DateTimeOffset date) => new
+        private static dynamic IsInvalid(DateTimeOffset date) => new
         {
             Condition = date == default,
             Message = "Date is required"
         };
+
+        private static dynamic IsInvalid(GenderType gender) => new
+        {
+            Condition = Enum.IsDefined(gender) is false,
+            Message = "Value is invalid"
+        };
+
 
 
         private static void Validate(params (dynamic Rule, string Parameter)[] validations)
