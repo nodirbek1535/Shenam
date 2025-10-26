@@ -36,7 +36,7 @@ namespace Shenam.API.Services.Foundations.Guests
 
         private static dynamic Isinvalid(Guid id) => new
         {
-            condition = id == Guid.Empty,
+            Condition = id == Guid.Empty,
             Message = "Id is required"
         };
 
