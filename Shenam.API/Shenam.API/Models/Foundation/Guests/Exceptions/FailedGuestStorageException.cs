@@ -13,7 +13,7 @@ namespace Shenam.API.Models.Foundation.Guests.Exceptions
         private SqlException sqlException;
 
         public FailedGuestStorageException(Xeption innerException)
-            : base(message: "Failed guest storage error occurred, contact support.", 
+            : base(message: "Failed guest storage error occurred, contact support", 
                   innerException)
         { }
 
