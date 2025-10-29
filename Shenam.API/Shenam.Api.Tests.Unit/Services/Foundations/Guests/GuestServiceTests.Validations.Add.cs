@@ -19,7 +19,7 @@ namespace Shenam.Api.Tests.Unit.Services.Foundations.Guests
             Guest nullGuest = null;
             var nullGuestException = new NullGuestException();
 
-            var expectedGuestValidtionException = 
+            var expectedGuestValidationException = 
                 new GuestValidationException(nullGuestException);
 
             //when
@@ -31,7 +31,7 @@ namespace Shenam.Api.Tests.Unit.Services.Foundations.Guests
                 addGuestTask.AsTask());
 
             this.loggingBrokerMock.Verify(broker =>
-                broker.LogError(It.Is(SameExceptionAs(expectedGuestValidtionException))),
+                broker.LogError(It.Is(SameExceptionAs(expectedGuestValidationException))),
                     Times.Once);
 
             this.storageBrokerMock.Verify(broker =>
