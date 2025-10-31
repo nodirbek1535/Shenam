@@ -23,7 +23,7 @@ namespace Shenam.Api.Tests.Unit.Services.Foundations.Guests
                 FirstName = "Alez",
                 LastName = "Terminator",
                 Address = "Brooks Str.#12",
-                DateOfBirth = new DateTimeOffset(),
+                DateOfBirth = DateTimeOffset.UtcNow,
                 Email = "1234567890@outlock.com",
                 Gender = GenderType.Male,
                 PhoneNumber = "1234567890",

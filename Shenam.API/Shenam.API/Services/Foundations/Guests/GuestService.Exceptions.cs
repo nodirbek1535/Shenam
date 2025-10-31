@@ -2,7 +2,10 @@
 //NODIRBEKNING MOHIRDEV PLATFORMASIDA ORGANGAN API SINOV LOYIHASI
 //===============================================================
 
+using System;
 using System.Threading.Tasks;
+using EFxceptions.Models.Exceptions;
+using Microsoft.Data.SqlClient;
 using Shenam.API.Models.Foundation.Guests;
 using Shenam.API.Models.Foundation.Guests.Exceptions;
 using Xeptions;
@@ -23,7 +26,30 @@ namespace Shenam.API.Services.Foundations.Guests
             {
                 throw CreateAndLogValidationException(nullGuestException);
             }
+            catch(InvalidGuestException invalidGuestException)
+            {
+                throw CreateAndLogValidationException(invalidGuestException);
+            }
+            catch(SqlException sqlException)
+            {
+                var failedGuestStorageException = new FailedGuestStorageException(sqlException);
+                throw CreateAndLogCriticalDependencyException(failedGuestStorageException);
+            }
+            catch(DuplicateKeyException duplicateKeyException)
+            {
+                var alreadyExistsGuestException =
+                    new AlreadyExistsGuestException(duplicateKeyException);
+                throw CreateAndLogDependencyValidationException(alreadyExistsGuestException); 
+            }
+            catch(Exception exception)
+            {
+                var failedGuestServiceException =
+                    new FailedGuestServiceException(exception);
+                throw CreateAndLogServiceException(failedGuestServiceException);
+            }
         }
+
+        
 
         private GuestValidationException CreateAndLogValidationException(Xeption exception)
         {
@@ -33,6 +59,35 @@ namespace Shenam.API.Services.Foundations.Guests
             this.loggingBroker.LogError(guestValidationException);
 
             return guestValidationException;
+        }
+
+        private GuestDependencyException CreateAndLogCriticalDependencyException(Xeption exception)
+        {
+            var guestDependencyException = new GuestDependencyException(exception);
+            this.loggingBroker.LogCritical(guestDependencyException);
+
+            return guestDependencyException;
+        }
+
+        private GuestDependencyValidationException CreateAndLogDependencyValidationException(
+            Xeption exception)
+        {
+            var guestDependencyValidationException =
+                new GuestDependencyValidationException(exception);
+
+            this.loggingBroker.LogError(guestDependencyValidationException);
+
+            return guestDependencyValidationException;
+        }
+
+        private GuestServiceException CreateAndLogServiceException(Xeption exception)
+        {
+            var guestServiceException =
+                new GuestServiceException(exception);
+
+            this.loggingBroker.LogError(guestServiceException);
+
+            return guestServiceException;
         }
     }
 }

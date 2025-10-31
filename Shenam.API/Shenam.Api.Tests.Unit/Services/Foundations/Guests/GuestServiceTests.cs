@@ -3,6 +3,8 @@
 //===============================================================
 
 using System.Linq.Expressions;
+using System.Runtime.Serialization;
+using Microsoft.Data.SqlClient;
 using Moq;
 using Shenam.API.Brokers.loggings;
 using Shenam.API.Brokers.Storages;
@@ -23,6 +25,8 @@ namespace Shenam.Api.Tests.Unit.Services.Foundations.Guests
         {
             this.storageBrokerMock = new Mock<IStorageBroker>();
             this.loggingBrokerMock = new Mock<ILoggingBroker>();
+            
+            this.guestService = new GuestService( 
                 storageBroker: this.storageBrokerMock.Object,
                 loggingBroker: this.loggingBrokerMock.Object);
         }
@@ -33,13 +37,28 @@ namespace Shenam.Api.Tests.Unit.Services.Foundations.Guests
         private static DateTimeOffset GetRandomDateTimeoffset() =>
             new DateTimeRange(earliestDate: new DateTime()).GetValue();
 
-        private Expression<Func<Xeption, bool>> SameExceptionAs(Xeption expectedException)
+        private static int GetRandomNumber() =>
+            new IntRange(min: 2, max: 9).GetValue();
+
+        private static string GetRandomString() =>
+            new MnemonicString().GetValue();
+
+        private static SqlException GetSqlError() =>
+            (SqlException)FormatterServices.GetUninitializedObject(typeof(SqlException));
+
+        private static T GetInvalidEnum<T>()
         {
-            return actualException =>
-                actualException.Message == expectedException.Message
-                && actualException.InnerException.Message == expectedException.InnerException.Message
-                && (actualException.InnerException as Xeption).DataEquals(expectedException.InnerException.Data);
+            int randomNumber = GetRandomNumber();
+            while (Enum.IsDefined(typeof(T), randomNumber) is true)
+            {
+                randomNumber = GetRandomNumber();
+            }
+
+            return (T)(object)randomNumber;
         }
+
+        private Expression<Func<Xeption, bool>> SameExceptionAs(Xeption expectedException)=>
+           actualException => actualException.SameExceptionAs(expectedException);
 
         private static Filler<Guest> CreateGuestFiller(DateTimeOffset date)
         {

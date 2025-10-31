@@ -25,7 +25,7 @@ namespace Shenam.API.Services.Foundations.Guests
         public ValueTask<Guest> AddGuestAsync(Guest guest) =>
         TryCatch(async () =>
         {
-            ValidateGuestNotNull(guest);
+            ValidateGuestOnAdd(guest);
               
             return await this.storageBroker.InsertGuestAsync(guest);
         });
