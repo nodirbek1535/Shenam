@@ -21,9 +21,9 @@ namespace Shenam.Api.Tests.Unit.Services.Foundations.Guests
             var failedGuestStorageException = new FailedGuestStorageException(sqlException);
 
             var expectedGuestDependencyException =
-                new GuestDependencyException(failedGuestStorageException);  
+                new GuestDependencyException(failedGuestStorageException);
 
-            this.storageBrokerMock.Setup(broker=>
+            this.storageBrokerMock.Setup(broker =>
                 broker.InsertGuestAsync(someGuest))
                     .ThrowsAsync(sqlException);
 
@@ -33,10 +33,10 @@ namespace Shenam.Api.Tests.Unit.Services.Foundations.Guests
 
 
             //then
-            await Assert.ThrowsAsync<GuestDependencyException>(()=>
+            await Assert.ThrowsAsync<GuestDependencyException>(() =>
                 addGuestTask.AsTask());
 
-            this.storageBrokerMock.Verify(broker=>
+            this.storageBrokerMock.Verify(broker =>
                 broker.InsertGuestAsync(someGuest),
                     Times.Once);
 
@@ -86,7 +86,7 @@ namespace Shenam.Api.Tests.Unit.Services.Foundations.Guests
                 broker.LogError(
                     It.Is(SameExceptionAs(guestDependencyValidationException))),
                 Times.Once);
-            
+
             this.storageBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }

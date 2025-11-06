@@ -25,8 +25,8 @@ namespace Shenam.Api.Tests.Unit.Services.Foundations.Guests
         {
             this.storageBrokerMock = new Mock<IStorageBroker>();
             this.loggingBrokerMock = new Mock<ILoggingBroker>();
-            
-            this.guestService = new GuestService( 
+
+            this.guestService = new GuestService(
                 storageBroker: this.storageBrokerMock.Object,
                 loggingBroker: this.loggingBrokerMock.Object);
         }
@@ -57,7 +57,7 @@ namespace Shenam.Api.Tests.Unit.Services.Foundations.Guests
             return (T)(object)randomNumber;
         }
 
-        private Expression<Func<Xeption, bool>> SameExceptionAs(Xeption expectedException)=>
+        private Expression<Func<Xeption, bool>> SameExceptionAs(Xeption expectedException) =>
            actualException => actualException.SameExceptionAs(expectedException);
 
         private static Filler<Guest> CreateGuestFiller(DateTimeOffset date)
