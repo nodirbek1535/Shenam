@@ -7,7 +7,7 @@ using Shenam.API.Models.Foundation.Guests;
 
 namespace Shenam.API.Models.Foundation.Hosts
 {
-    public class Host
+    public class HostEntity
     {
         public Guid Id { get; set; }
         public string FirstName { get; set; }
