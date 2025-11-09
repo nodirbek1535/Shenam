@@ -1,12 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿//===============================================================
+//NODIRBEKNING MOHIRDEV PLATFORMASIDA ORGANGAN API SINOV LOYIHASI
+//===============================================================
+
 using Moq;
 using Shenam.API.Models.Foundation.Guests;
 using Shenam.API.Models.Foundation.Guests.Exceptions;
-using Xunit.Sdk;
 
 namespace Shenam.Api.Tests.Unit.Services.Foundations.Guests
 {
