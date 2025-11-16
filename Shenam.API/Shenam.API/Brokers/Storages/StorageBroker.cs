@@ -2,9 +2,12 @@
 //NODIRBEKNING MOHIRDEV PLATFORMASIDA ORGANGAN API SINOV LOYIHASI
 //===============================================================
 
+using System.Threading.Tasks;
 using EFxceptions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using Shenam.API.Models.Foundation.Guests;
+using Shenam.API.Models.Foundation.Hosts;
 
 namespace Shenam.API.Brokers.Storages
 {
@@ -26,5 +29,15 @@ namespace Shenam.API.Brokers.Storages
         }
 
         public override void Dispose() { }
+
+        ValueTask<Guest> IStorageBroker.InsertGuestAsync(Guest guest)
+        {
+            throw new System.NotImplementedException();
+        }
+        
+        ValueTask<HostEntity> IStorageBroker.InsertHostEntityAsync(HostEntity host)
+        {
+            throw new System.NotImplementedException();
+        }
     }
 }
