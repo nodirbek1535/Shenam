@@ -1,4 +1,8 @@
-﻿using Moq;
+﻿//===============================================================
+//NODIRBEKNING MOHIRDEV PLATFORMASIDA ORGANGAN API SINOV LOYIHASI
+//===============================================================
+
+using Moq;
 using Shenam.API.Models.Foundation.Guests;
 using Shenam.API.Models.Foundation.Guests.Exceptions;
 
