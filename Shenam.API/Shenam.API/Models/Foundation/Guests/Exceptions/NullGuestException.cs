@@ -2,7 +2,6 @@
 //NODIRBEKNING MOHIRDEV PLATFORMASIDA ORGANGAN API SINOV LOYIHASI
 //===============================================================
 
-
 using System;
 using Xeptions;
 
