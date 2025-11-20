@@ -10,14 +10,19 @@ using Shenam.API.Models.Foundation.Hosts;
 
 namespace Shenam.API.Services.Foundations.Hosts
 {
-    public partial class HostEntityService:IHostEntityService
+    public partial class HostEntityService : IHostEntityService
     {
         private readonly IStorageBroker storageBroker;
 
-        public HostEntityService(IStorageBroker storageBroker)=>
+        public HostEntityService(IStorageBroker storageBroker) =>
             this.storageBroker = storageBroker;
 
-        public ValueTask<HostEntity> AddHostEntityAsync(HostEntity host) =>
-            throw new NotImplementedException();
+        public ValueTask<HostEntity> AddHostEntityAsync(HostEntity host)
+        {
+            ValidateHostEntityOnAdd(host);
+
+            return this.storageBroker.InsertHostEntityAsync(host);
+        }
+
     }
 }

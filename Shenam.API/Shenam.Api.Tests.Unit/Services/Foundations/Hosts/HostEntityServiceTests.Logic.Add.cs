@@ -63,6 +63,7 @@ namespace Shenam.Api.Tests.Unit.Services.Foundations.Hosts
             Times.Once);
 
             this.storageBrokerMock.VerifyNoOtherCalls();
+
         }
     }
 }
