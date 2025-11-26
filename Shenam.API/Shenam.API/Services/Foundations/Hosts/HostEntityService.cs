@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Shenam.API.Brokers.loggings;
 using Shenam.API.Brokers.Storages;
 using Shenam.API.Models.Foundation.Hosts;
+using Shenam.API.Models.Foundation.Hosts.Exceptions;
 
 namespace Shenam.API.Services.Foundations.Hosts
 {
@@ -23,11 +24,27 @@ namespace Shenam.API.Services.Foundations.Hosts
             this.loggingBroker = loggingBroker;
         }
 
-        public ValueTask<HostEntity> AddHostEntityAsync(HostEntity host)
+        public async ValueTask<HostEntity> AddHostEntityAsync(HostEntity host)
         {
-            ValidateHostEntityOnAdd(host);
 
-            return this.storageBroker.InsertHostEntityAsync(host);
+            try
+            {
+                if(host is null)
+                {
+                    throw new NullHostEntityException();
+                }
+
+                return await this.storageBroker.InsertHostEntityAsync(host);
+            }
+            catch(NullHostEntityException nullHostEntityException)
+            {
+                var hostEntityValidationException =
+                    new HostEntityValidationException(nullHostEntityException);
+
+                this.loggingBroker.LogError(hostEntityValidationException);
+
+                throw hostEntityValidationException;
+            }
         }
 
     }
