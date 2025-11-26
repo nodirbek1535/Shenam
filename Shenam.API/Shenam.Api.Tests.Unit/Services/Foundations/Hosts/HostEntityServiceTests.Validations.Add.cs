@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Components;
 using Moq;
 using Shenam.API.Models.Foundation.Hosts;
 using Shenam.API.Models.Foundation.Hosts.Exceptions;
@@ -22,7 +23,7 @@ namespace Shenam.Api.Tests.Unit.Services.Foundations.Hosts
             HostEntity nullHostEntity = null;
             var nullHostEntityException = new NullHostEntityException();
 
-            var expectedHostEntityValidationException = 
+            var expectedHostEntityValidationException =
                 new HostEntityValidationException(nullHostEntityException);
 
             //when
@@ -35,6 +36,68 @@ namespace Shenam.Api.Tests.Unit.Services.Foundations.Hosts
 
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogError(It.Is(SameExceptionAs(expectedHostEntityValidationException))),
+                    Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.InsertHostEntityAsync(It.IsAny<HostEntity>()),
+                    Times.Never);
+
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.storageBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Theory]
+        [InlineData(null)]
+        [InlineData("")]
+        [InlineData(" ")]
+        public async Task ShouldThrowValidationExceptionOnAddIfHostEntityIsInvalidAndLogItAsync(string invalidText)
+        {
+            //given
+            var invalidHostEntity = new HostEntity
+            {
+                FirstName = invalidText
+            };
+
+            var invalidHostEntityException = new InvalidHostEntityException();
+
+            invalidHostEntityException.AddData(
+                key: nameof(HostEntity.Id),
+                values: "Id is required");
+
+            invalidHostEntityException.AddData(
+                key: nameof(HostEntity.FirstName),
+                values: "Text is required");
+
+            invalidHostEntityException.AddData(
+                key: nameof(HostEntity.LastName),
+                values: "Text is required");
+
+            invalidHostEntityException.AddData(
+                key: nameof(HostEntity.DateOfBirth),
+                values: "Date is required");
+
+            invalidHostEntityException.AddData(
+                key: nameof(HostEntity.Email),
+                values: "Text is required");
+
+            invalidHostEntityException.AddData(
+                key: nameof(HostEntity.PhoneNumber),
+                values: "Text is required");
+
+            var expectedHostEntityValidationException =
+                new HostEntityValidationException(invalidHostEntityException);
+
+            //when
+            ValueTask<HostEntity> addHostEntityTask =
+                this.hostEntityService.AddHostEntityAsync(invalidHostEntity);
+
+            //then
+            await Assert.ThrowsAsync<HostEntityValidationException>(() =>
+                addHostEntityTask.AsTask());
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                expectedHostEntityValidationException))),
                     Times.Once);
 
             this.storageBrokerMock.Verify(broker =>
