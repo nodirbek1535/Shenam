@@ -21,9 +21,13 @@ namespace Shenam.API.Services.Foundations.Hosts
             {
                 return await returningHostEntityFunction();
             }
-            catch(NullHostEntityException nullHostEntityException)
+            catch (NullHostEntityException nullHostEntityException)
             {
                 throw CreateAndLogValidationException(nullHostEntityException);
+            }
+            catch (InvalidHostEntityException invalidHostEntityException)
+            {
+                throw CreateAndLogValidationException(invalidHostEntityException);
             }
         }
 

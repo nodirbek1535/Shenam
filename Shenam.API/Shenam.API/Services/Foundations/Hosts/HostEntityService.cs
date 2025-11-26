@@ -29,10 +29,8 @@ namespace Shenam.API.Services.Foundations.Hosts
 
             try
             {
-                if(host is null)
-                {
-                    throw new NullHostEntityException();
-                }
+                ValidateHostEntityOnAdd(host);
+
 
                 return await this.storageBroker.InsertHostEntityAsync(host);
             }
@@ -40,6 +38,15 @@ namespace Shenam.API.Services.Foundations.Hosts
             {
                 var hostEntityValidationException =
                     new HostEntityValidationException(nullHostEntityException);
+
+                this.loggingBroker.LogError(hostEntityValidationException);
+
+                throw hostEntityValidationException;
+            }
+            catch(InvalidHostEntityException invalidHostEntityException)
+            {
+                var hostEntityValidationException =
+                    new HostEntityValidationException(invalidHostEntityException);
 
                 this.loggingBroker.LogError(hostEntityValidationException);
 
