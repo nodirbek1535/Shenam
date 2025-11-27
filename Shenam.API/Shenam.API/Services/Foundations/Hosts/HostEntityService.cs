@@ -26,32 +26,9 @@ namespace Shenam.API.Services.Foundations.Hosts
 
         public async ValueTask<HostEntity> AddHostEntityAsync(HostEntity host)
         {
+            ValidateHostEntityOnAdd(host);
 
-            try
-            {
-                ValidateHostEntityOnAdd(host);
-
-
-                return await this.storageBroker.InsertHostEntityAsync(host);
-            }
-            catch(NullHostEntityException nullHostEntityException)
-            {
-                var hostEntityValidationException =
-                    new HostEntityValidationException(nullHostEntityException);
-
-                this.loggingBroker.LogError(hostEntityValidationException);
-
-                throw hostEntityValidationException;
-            }
-            catch(InvalidHostEntityException invalidHostEntityException)
-            {
-                var hostEntityValidationException =
-                    new HostEntityValidationException(invalidHostEntityException);
-
-                this.loggingBroker.LogError(hostEntityValidationException);
-
-                throw hostEntityValidationException;
-            }
+            return await this.storageBroker.InsertHostEntityAsync(host);
         }
 
     }

@@ -9,6 +9,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Components;
 using Moq;
+using Shenam.API.Models.Foundation.Guests;
 using Shenam.API.Models.Foundation.Hosts;
 using Shenam.API.Models.Foundation.Hosts.Exceptions;
 
@@ -99,6 +100,43 @@ namespace Shenam.Api.Tests.Unit.Services.Foundations.Hosts
                 broker.LogError(It.Is(SameExceptionAs(
                 expectedHostEntityValidationException))),
                     Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.InsertHostEntityAsync(It.IsAny<HostEntity>()),
+                    Times.Never);
+
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.storageBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public async Task ShouldThrowValidationExceptionOnAddIfGenderIsInvalidAndLogItAsync()
+        {
+            //given
+            HostEntity randomHostEntity = CreateRandomHostEntity();
+            HostEntity invalidHostEntity = randomHostEntity;
+            invalidHostEntity.Gender = GetInvalidEnum<GenderType>();
+            var invalidHostEntityException = new InvalidHostEntityException();
+
+            invalidHostEntityException.AddData(
+                key: nameof(HostEntity.Gender),
+                values: "Value is invalid");
+
+            var expectedHostEntityValidationException =
+                new HostEntityValidationException(invalidHostEntityException);
+
+            //when
+            ValueTask<HostEntity> addHostEntityTask =
+                this.hostEntityService.AddHostEntityAsync(invalidHostEntity);
+
+            //then
+            await Assert.ThrowsAsync<HostEntityValidationException>(() =>
+                addHostEntityTask.AsTask());
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedHostEntityValidationException))),
+                        Times.Once);
 
             this.storageBrokerMock.Verify(broker =>
                 broker.InsertHostEntityAsync(It.IsAny<HostEntity>()),

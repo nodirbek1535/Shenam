@@ -35,6 +35,20 @@ namespace Shenam.Api.Tests.Unit.Services.Foundations.Hosts
         private static DateTimeOffset GetRandomDateTimeoffset() =>
             new DateTimeRange(earliestDate: new DateTime()).GetValue();
 
+        private static int GetRandomNumber() =>
+            new IntRange(min: 2, max: 9).GetValue();
+
+        private static T GetInvalidEnum<T>()
+        {
+            int randomnumber = GetRandomNumber();
+            while (Enum.IsDefined(typeof(T), randomnumber) is true)
+            {
+                randomnumber = GetRandomNumber();
+            }
+
+            return (T)(object)randomnumber;
+        }
+
         private Expression<Func<Xeption, bool>> SameExceptionAs(Xeption expectedException)=>
             actualException => actualException.SameExceptionAs(expectedException);
 
