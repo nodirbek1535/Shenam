@@ -31,10 +31,10 @@ namespace Shenam.API.Services.Foundations.Hosts
             }
         }
 
-        private GuestValidationException CreateAndLogValidationException(Xeption exception)
+        private HostEntityValidationException CreateAndLogValidationException(Xeption exception)
         {
             var hostEntityValidationException =
-                new GuestValidationException(exception);
+                new HostEntityValidationException(exception);
 
             this.loggingBroker.LogError(hostEntityValidationException);
 

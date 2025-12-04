@@ -111,7 +111,7 @@ namespace Shenam.Api.Tests.Unit.Services.Foundations.Hosts
 
         [Fact]
         public async Task ShouldThrowValidationExceptionOnAddIfGenderIsInvalidAndLogItAsync()
-        {
+            {
             //given
             HostEntity randomHostEntity = CreateRandomHostEntity();
             HostEntity invalidHostEntity = randomHostEntity;
