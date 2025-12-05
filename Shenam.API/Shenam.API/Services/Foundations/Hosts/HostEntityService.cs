@@ -2,13 +2,10 @@
 //NODIRBEKNING MOHIRDEV PLATFORMASIDA ORGANGAN API SINOV LOYIHASI
 //===============================================================
 
-using System;
 using System.Threading.Tasks;
 using Shenam.API.Brokers.loggings;
 using Shenam.API.Brokers.Storages;
-using Shenam.API.Models.Foundation.Guests;
 using Shenam.API.Models.Foundation.Hosts;
-using Shenam.API.Models.Foundation.Hosts.Exceptions;
 
 namespace Shenam.API.Services.Foundations.Hosts
 {

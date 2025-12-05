@@ -31,7 +31,6 @@ namespace Shenam.Api.Tests.Unit.Services.Foundations.Guests
             ValueTask<Guest> addGuestTask =
                 this.guestService.AddGuestAsync(someGuest);
 
-
             //then
             await Assert.ThrowsAsync<GuestDependencyException>(()=>
                 addGuestTask.AsTask());
