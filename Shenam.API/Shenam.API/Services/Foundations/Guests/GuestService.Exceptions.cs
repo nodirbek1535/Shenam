@@ -39,7 +39,7 @@ namespace Shenam.API.Services.Foundations.Guests
             {
                 var alreadyExistsGuestException =
                     new AlreadyExistsGuestException(duplicateKeyException);
-                throw CreateAndLogDependencyValidationException(alreadyExistsGuestException); 
+                throw CreateAndLogDependencyValidationException(alreadyExistsGuestException);
             }
             catch(Exception exception)
             {

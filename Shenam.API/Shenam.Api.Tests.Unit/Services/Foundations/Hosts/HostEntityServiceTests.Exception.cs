@@ -5,7 +5,6 @@
 using EFxceptions.Models.Exceptions;
 using Microsoft.Data.SqlClient;
 using Moq;
-using Shenam.API.Models.Foundation.Guests.Exceptions;
 using Shenam.API.Models.Foundation.Hosts;
 using Shenam.API.Models.Foundation.Hosts.Exceptions;
 
@@ -61,10 +60,10 @@ namespace Shenam.Api.Tests.Unit.Services.Foundations.Hosts
                 new DuplicateKeyException(someMessage);
 
             var alreadyExistsHostEntityException = 
-                new AlreadyExistsGuestException(duplicateKeyException);
+                new AlreadyExistsHostEntityException(duplicateKeyException);
 
             var hostEntityDependencyValidationException =
-                new HostEntityDependencyException(alreadyExistsHostEntityException);
+                new HostEntityDependencyValidationException(alreadyExistsHostEntityException);
 
             this.storageBrokerMock.Setup(broker =>
                 broker.InsertHostEntityAsync(someHostEntity))
@@ -75,7 +74,7 @@ namespace Shenam.Api.Tests.Unit.Services.Foundations.Hosts
                 this.hostEntityService.AddHostEntityAsync(someHostEntity);
 
             //then
-            await Assert.ThrowsAsync<HostEntityDependencyException>(() =>
+            await Assert.ThrowsAsync<HostEntityDependencyValidationException>(() =>
                 addHostEntityTask.AsTask());
 
             this.storageBrokerMock.Verify(broker =>

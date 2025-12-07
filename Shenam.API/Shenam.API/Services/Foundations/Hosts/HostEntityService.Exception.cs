@@ -2,10 +2,9 @@
 //NODIRBEKNING MOHIRDEV PLATFORMASIDA ORGANGAN API SINOV LOYIHASI
 //===============================================================
 
-using System.Data.SqlTypes;
 using System.Threading.Tasks;
+using EFxceptions.Models.Exceptions;
 using Microsoft.Data.SqlClient;
-using Shenam.API.Models.Foundation.Guests.Exceptions;
 using Shenam.API.Models.Foundation.Hosts;
 using Shenam.API.Models.Foundation.Hosts.Exceptions;
 using Xeptions;
@@ -39,6 +38,14 @@ namespace Shenam.API.Services.Foundations.Hosts
                 throw CreateAndLogCriticalDependencyException(
                     failedHostEntityStorageException);
             }
+            catch(DuplicateKeyException duplicateKeyException)
+            {
+                var alreadyExistsHostEntityException =
+                    new AlreadyExistsHostEntityException(duplicateKeyException);
+
+                throw CreateAndLogDependencyValidationException(
+                    alreadyExistsHostEntityException);
+            }
         }
 
         private HostEntityValidationException CreateAndLogValidationException(Xeption exception)
@@ -59,6 +66,17 @@ namespace Shenam.API.Services.Foundations.Hosts
             this.loggingBroker.LogCritical(hostEntityDependencyException);
 
             return hostEntityDependencyException;
+        }
+
+        private HostEntityDependencyValidationException CreateAndLogDependencyValidationException(
+            Xeption exception)
+        {
+            var hostEntityDependencyValidationException =
+                new HostEntityDependencyValidationException(exception);
+
+            this.loggingBroker.LogError(hostEntityDependencyValidationException);
+
+            return hostEntityDependencyValidationException;
         }
     }
 }
