@@ -30,13 +30,13 @@ namespace Shenam.Api.Tests.Unit.Services.Foundations.Hosts
 
             //when
             ValueTask<HostEntity> addHostEntityTask =
-                this.hostEntityService.AddHostEntityAsync(someHostEntity);  
+                this.hostEntityService.AddHostEntityAsync(someHostEntity);
 
             //then
             await Assert.ThrowsAsync<HostEntityDependencyException>(() =>
                 addHostEntityTask.AsTask());
 
-            this.storageBrokerMock.Verify(broker => 
+            this.storageBrokerMock.Verify(broker =>
                 broker.InsertHostEntityAsync(someHostEntity),
                     Times.Once);
 
@@ -56,10 +56,10 @@ namespace Shenam.Api.Tests.Unit.Services.Foundations.Hosts
             HostEntity someHostEntity = CreateRandomHostEntity();
             string someMessage = GetRandomString();
 
-            var duplicateKeyException = 
+            var duplicateKeyException =
                 new DuplicateKeyException(someMessage);
 
-            var alreadyExistsHostEntityException = 
+            var alreadyExistsHostEntityException =
                 new AlreadyExistsHostEntityException(duplicateKeyException);
 
             var hostEntityDependencyValidationException =
@@ -84,6 +84,44 @@ namespace Shenam.Api.Tests.Unit.Services.Foundations.Hosts
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogError(
                     It.Is(SameExceptionAs(hostEntityDependencyValidationException))),
+                        Times.Once);
+
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public async Task ShouldThrowServiceExceptionOnAddIfServiceErrorOccursAndLogItAsync()
+        {
+            //given
+            HostEntity someHostEntity = CreateRandomHostEntity();
+            var serviceException = new Exception();
+
+            var failedHostEntityServiceException =
+                new FailedHostEntityServiceException(serviceException);
+
+            var expectedHostEntityServiceException =
+                new HostEntityServiceException(failedHostEntityServiceException);
+
+            this.storageBrokerMock.Setup(broker =>
+                broker.InsertHostEntityAsync(someHostEntity))
+                    .ThrowsAsync(serviceException);
+
+            //when
+            ValueTask<HostEntity> addHostEntityTask =
+                this.hostEntityService.AddHostEntityAsync(someHostEntity);
+
+            //then
+            await Assert.ThrowsAsync<HostEntityServiceException>(() =>
+                addHostEntityTask.AsTask());
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.InsertHostEntityAsync(someHostEntity),
+                    Times.Once);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(
+                    It.Is(SameExceptionAs(expectedHostEntityServiceException))),
                         Times.Once);
 
             this.storageBrokerMock.VerifyNoOtherCalls();
