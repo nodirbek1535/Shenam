@@ -41,7 +41,10 @@ namespace Shenam.Api.Tests.Unit.Services.Foundations.Hosts
             new IntRange(min: 2, max: 9).GetValue();
 
         private static SqlException GetSqlError() =>
-            (SqlException)FormatterServices.GetUninitializedObject(typeof(SqlException));  
+            (SqlException)FormatterServices.GetUninitializedObject(typeof(SqlException));
+
+        private static string GetRandomString() =>
+            new MnemonicString().GetValue();
 
         private static T GetInvalidEnum<T>()
         {
