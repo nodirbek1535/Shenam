@@ -2,6 +2,7 @@
 //NODIRBEKNING MOHIRDEV PLATFORMASIDA ORGANGAN API SINOV LOYIHASI
 //===============================================================
 
+using System;
 using System.Threading.Tasks;
 using EFxceptions.Models.Exceptions;
 using Microsoft.Data.SqlClient;
@@ -13,7 +14,7 @@ namespace Shenam.API.Services.Foundations.Hosts
 {
     public partial class HostEntityService
     {
-        private delegate ValueTask<HostEntity> ReturningHostEntityFunction(); 
+        private delegate ValueTask<HostEntity> ReturningHostEntityFunction();
 
         private async ValueTask<HostEntity> TryCatch(
             ReturningHostEntityFunction returningHostEntityFunction)
@@ -30,7 +31,7 @@ namespace Shenam.API.Services.Foundations.Hosts
             {
                 throw CreateAndLogValidationException(invalidHostEntityException);
             }
-            catch(SqlException sqlException)
+            catch (SqlException sqlException)
             {
                 var failedHostEntityStorageException =
                     new FailedHostEntityStorageException(sqlException);
@@ -38,13 +39,21 @@ namespace Shenam.API.Services.Foundations.Hosts
                 throw CreateAndLogCriticalDependencyException(
                     failedHostEntityStorageException);
             }
-            catch(DuplicateKeyException duplicateKeyException)
+            catch (DuplicateKeyException duplicateKeyException)
             {
                 var alreadyExistsHostEntityException =
                     new AlreadyExistsHostEntityException(duplicateKeyException);
 
                 throw CreateAndLogDependencyValidationException(
                     alreadyExistsHostEntityException);
+            }
+            catch (Exception exception)
+            {
+                var failedHostEntityServiceException =
+                    new FailedHostEntityServiceException(exception);
+
+                throw CreateAndLogServiceException(
+                    failedHostEntityServiceException);
             }
         }
 
@@ -75,8 +84,16 @@ namespace Shenam.API.Services.Foundations.Hosts
                 new HostEntityDependencyValidationException(exception);
 
             this.loggingBroker.LogError(hostEntityDependencyValidationException);
-
             return hostEntityDependencyValidationException;
+        }
+
+        private HostEntityServiceException CreateAndLogServiceException(Xeption exception)
+        {
+            var hostEntityServiceException =
+                new HostEntityServiceException(exception);
+
+            this.loggingBroker.LogError(hostEntityServiceException);
+            return hostEntityServiceException;
         }
     }
 }
