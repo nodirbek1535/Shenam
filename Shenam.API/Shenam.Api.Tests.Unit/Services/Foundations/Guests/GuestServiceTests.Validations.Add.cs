@@ -1,12 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿//===============================================================
+//NODIRBEKNING MOHIRDEV PLATFORMASIDA ORGANGAN API SINOV LOYIHASI
+//===============================================================
+
 using Moq;
 using Shenam.API.Models.Foundation.Guests;
 using Shenam.API.Models.Foundation.Guests.Exceptions;
-using Xunit.Sdk;
 
 namespace Shenam.Api.Tests.Unit.Services.Foundations.Guests
 {
@@ -19,7 +17,7 @@ namespace Shenam.Api.Tests.Unit.Services.Foundations.Guests
             Guest nullGuest = null;
             var nullGuestException = new NullGuestException();
 
-            var expectedGuestValidationException = 
+            var expectedGuestValidationException =
                 new GuestValidationException(nullGuestException);
 
             //when
@@ -53,7 +51,7 @@ namespace Shenam.Api.Tests.Unit.Services.Foundations.Guests
             var invalidGuest = new Guest
             {
                 FirstName = invalidText
-            };  
+            };
 
             var invalidGuestException = new InvalidGuestException();
 
@@ -119,16 +117,16 @@ namespace Shenam.Api.Tests.Unit.Services.Foundations.Guests
                 key: nameof(Guest.Gender),
                 values: "Value is invalid");
 
-            var expectedGuestValidationException = 
+            var expectedGuestValidationException =
                 new GuestValidationException(invalidGuestException);
 
             //when
             ValueTask<Guest> addGuestTask =
-                this.guestService.AddGuestAsync(invalidGuest);  
+                this.guestService.AddGuestAsync(invalidGuest);
 
             //then
             await Assert.ThrowsAsync<GuestValidationException>(() =>
-                addGuestTask.AsTask()); 
+                addGuestTask.AsTask());
 
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogError(It.Is(SameExceptionAs(
@@ -140,7 +138,7 @@ namespace Shenam.Api.Tests.Unit.Services.Foundations.Guests
                     Times.Never);
 
             this.loggingBrokerMock.VerifyNoOtherCalls();
-            this.storageBrokerMock.VerifyNoOtherCalls();    
+            this.storageBrokerMock.VerifyNoOtherCalls();
         }
     }
 }

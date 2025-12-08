@@ -9,7 +9,7 @@ using Shenam.API.Models.Foundation.Guests;
 
 namespace Shenam.API.Services.Foundations.Guests
 {
-    public partial class  GuestService : IGuestService
+    public partial class GuestService : IGuestService
     {
         private readonly IStorageBroker storageBroker;
         private readonly ILoggingBroker loggingBroker;
@@ -26,7 +26,7 @@ namespace Shenam.API.Services.Foundations.Guests
         TryCatch(async () =>
         {
             ValidateGuestOnAdd(guest);
-              
+
             return await this.storageBroker.InsertGuestAsync(guest);
         });
     }

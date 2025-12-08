@@ -1,4 +1,4 @@
-﻿//===============================================================
+//===============================================================
 //NODIRBEKNING MOHIRDEV PLATFORMASIDA ORGANGAN API SINOV LOYIHASI
 //===============================================================
 
@@ -21,9 +21,9 @@ namespace Shenam.Api.Tests.Unit.Services.Foundations.Guests
             var failedGuestStorageException = new FailedGuestStorageException(sqlException);
 
             var expectedGuestDependencyException =
-                new GuestDependencyException(failedGuestStorageException);  
+                new GuestDependencyException(failedGuestStorageException);
 
-            this.storageBrokerMock.Setup(broker=>
+            this.storageBrokerMock.Setup(broker =>
                 broker.InsertGuestAsync(someGuest))
                     .ThrowsAsync(sqlException);
 
@@ -32,10 +32,10 @@ namespace Shenam.Api.Tests.Unit.Services.Foundations.Guests
                 this.guestService.AddGuestAsync(someGuest);
 
             //then
-            await Assert.ThrowsAsync<GuestDependencyException>(()=>
+            await Assert.ThrowsAsync<GuestDependencyException>(() =>
                 addGuestTask.AsTask());
 
-            this.storageBrokerMock.Verify(broker=>
+            this.storageBrokerMock.Verify(broker =>
                 broker.InsertGuestAsync(someGuest),
                     Times.Once);
 
@@ -84,8 +84,8 @@ namespace Shenam.Api.Tests.Unit.Services.Foundations.Guests
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogError(
                     It.Is(SameExceptionAs(guestDependencyValidationException))),
-                        Times.Once);
-            
+                      Times.Once);
+          
             this.storageBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }

@@ -26,22 +26,22 @@ namespace Shenam.API.Services.Foundations.Guests
             {
                 throw CreateAndLogValidationException(nullGuestException);
             }
-            catch(InvalidGuestException invalidGuestException)
+            catch (InvalidGuestException invalidGuestException)
             {
                 throw CreateAndLogValidationException(invalidGuestException);
             }
-            catch(SqlException sqlException)
+            catch (SqlException sqlException)
             {
                 var failedGuestStorageException = new FailedGuestStorageException(sqlException);
                 throw CreateAndLogCriticalDependencyException(failedGuestStorageException);
             }
-            catch(DuplicateKeyException duplicateKeyException)
+            catch (DuplicateKeyException duplicateKeyException)
             {
                 var alreadyExistsGuestException =
                     new AlreadyExistsGuestException(duplicateKeyException);
                 throw CreateAndLogDependencyValidationException(alreadyExistsGuestException);
             }
-            catch(Exception exception)
+            catch (Exception exception)
             {
                 var failedGuestServiceException =
                     new FailedGuestServiceException(exception);
@@ -49,7 +49,7 @@ namespace Shenam.API.Services.Foundations.Guests
             }
         }
 
-        
+
 
         private GuestValidationException CreateAndLogValidationException(Xeption exception)
         {

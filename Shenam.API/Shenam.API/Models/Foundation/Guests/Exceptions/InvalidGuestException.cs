@@ -6,7 +6,7 @@ using Xeptions;
 
 namespace Shenam.API.Models.Foundation.Guests.Exceptions
 {
-    public class InvalidGuestException:Xeption
+    public class InvalidGuestException : Xeption
     {
         public InvalidGuestException()
             : base(message: "Guest is invalid")
