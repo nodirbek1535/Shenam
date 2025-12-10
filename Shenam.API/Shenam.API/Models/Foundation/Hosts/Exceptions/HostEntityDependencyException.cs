@@ -6,7 +6,7 @@ using Xeptions;
 
 namespace Shenam.API.Models.Foundation.Hosts.Exceptions
 {
-    public class HostEntityDependencyException:Xeption
+    public class HostEntityDependencyException : Xeption
     {
         public HostEntityDependencyException(Xeption innerException)
             : base(message: "Host entity dependency error occurred, contact support",

@@ -18,7 +18,7 @@ namespace Shenam.Api.Tests.Unit.Services.Foundations.Hosts
     public partial class HostEntityServiceTests
     {
         private readonly Mock<IStorageBroker> storageBrokerMock;
-        private readonly Mock<ILoggingBroker> loggingBrokerMock;    
+        private readonly Mock<ILoggingBroker> loggingBrokerMock;
         private readonly IHostEntityService hostEntityService;
 
         public HostEntityServiceTests()
@@ -30,7 +30,7 @@ namespace Shenam.Api.Tests.Unit.Services.Foundations.Hosts
                 storageBroker: this.storageBrokerMock.Object,
                 loggingBroker: this.loggingBrokerMock.Object);
         }
-        
+
         private static HostEntity CreateRandomHostEntity() =>
             CreateHostEntityFiller(date: GetRandomDateTimeoffset()).Create();
 
@@ -57,7 +57,7 @@ namespace Shenam.Api.Tests.Unit.Services.Foundations.Hosts
             return (T)(object)randomnumber;
         }
 
-        private Expression<Func<Xeption, bool>> SameExceptionAs(Xeption expectedException)=>
+        private Expression<Func<Xeption, bool>> SameExceptionAs(Xeption expectedException) =>
             actualException => actualException.SameExceptionAs(expectedException);
 
         public static Filler<HostEntity> CreateHostEntityFiller(DateTimeOffset date)

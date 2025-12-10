@@ -12,7 +12,7 @@ namespace Shenam.API.Services.Foundations.Hosts
     public partial class HostEntityService : IHostEntityService
     {
         private readonly IStorageBroker storageBroker;
-        private readonly ILoggingBroker loggingBroker; 
+        private readonly ILoggingBroker loggingBroker;
 
         public HostEntityService(
             IStorageBroker storageBroker,

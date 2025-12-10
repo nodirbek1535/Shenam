@@ -34,7 +34,7 @@ namespace Shenam.API.Brokers.Storages
         {
             throw new System.NotImplementedException();
         }
-        
+
         ValueTask<HostEntity> IStorageBroker.InsertHostEntityAsync(HostEntity host)
         {
             throw new System.NotImplementedException();
