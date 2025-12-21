@@ -7,6 +7,7 @@ using EFxceptions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Shenam.API.Models.Foundation.Guests;
+using Shenam.API.Models.Foundation.Homes;
 using Shenam.API.Models.Foundation.Hosts;
 
 namespace Shenam.API.Brokers.Storages
@@ -36,6 +37,11 @@ namespace Shenam.API.Brokers.Storages
         }
         
         ValueTask<HostEntity> IStorageBroker.InsertHostEntityAsync(HostEntity host)
+        {
+            throw new System.NotImplementedException();
+        }
+
+        ValueTask<Home> IStorageBroker.InsertHomeAsync(Home home)
         {
             throw new System.NotImplementedException();
         }
