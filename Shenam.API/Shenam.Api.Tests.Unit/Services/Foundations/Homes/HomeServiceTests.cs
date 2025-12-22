@@ -3,6 +3,7 @@
 //===============================================================
 
 using Moq;
+using Shenam.API.Brokers.loggings;
 using Shenam.API.Brokers.Storages;
 using Shenam.API.Models.Foundation.Homes;
 using Shenam.API.Services.Foundations.Homes;
@@ -13,20 +14,35 @@ namespace Shenam.Api.Tests.Unit.Services.Foundations.Homes
     public partial class HomeServiceTests
     {
         private readonly Mock<IStorageBroker> storageBrokerMock;
+        private readonly Mock<ILoggingBroker> loggingbrokerMock;
         private readonly IHomeService homeService;
 
         public HomeServiceTests()
         {
             this.storageBrokerMock = new Mock<IStorageBroker>();
+            this.loggingbrokerMock = new Mock<ILoggingBroker>();
 
             this.homeService = new HomeService(
-                storageBroker: this.storageBrokerMock.Object);
+                storageBroker: this.storageBrokerMock.Object,
+                loggingBroker: this.loggingbrokerMock.Object);
         }
 
         private static Home CreateRandomHome() =>
             CreateHomeFiller().Create();
 
-        private static Filler<Home> CreateHomeFiller() =>
-            new Filler<Home>();
+        private static Filler<Home> CreateHomeFiller()
+        {
+            var filler = new Filler<Home>();
+            
+            filler.Setup()
+                .OnProperty(h => h.NumberOfBedrooms).Use(1)
+                .OnProperty(h => h.NumberOfBathrooms).Use(1)
+                .OnProperty(h => h.Area).Use(500.0)
+                .OnProperty(h => h.Price).Use(10000.00M)
+                .OnProperty(h => h.HomeType).Use(TypeHome.Bungalow);
+
+            return filler;
+
+        }
     }
 }
