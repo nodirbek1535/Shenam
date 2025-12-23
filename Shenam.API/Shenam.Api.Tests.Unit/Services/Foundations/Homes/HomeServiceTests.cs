@@ -7,24 +7,26 @@ using Shenam.API.Brokers.loggings;
 using Shenam.API.Brokers.Storages;
 using Shenam.API.Models.Foundation.Homes;
 using Shenam.API.Services.Foundations.Homes;
+using System.Linq.Expressions;
 using Tynamix.ObjectFiller;
+using Xeptions;
 
 namespace Shenam.Api.Tests.Unit.Services.Foundations.Homes
 {
     public partial class HomeServiceTests
     {
         private readonly Mock<IStorageBroker> storageBrokerMock;
-        private readonly Mock<ILoggingBroker> loggingbrokerMock;
+        private readonly Mock<ILoggingBroker> loggingBrokerMock;
         private readonly IHomeService homeService;
 
         public HomeServiceTests()
         {
             this.storageBrokerMock = new Mock<IStorageBroker>();
-            this.loggingbrokerMock = new Mock<ILoggingBroker>();
+            this.loggingBrokerMock = new Mock<ILoggingBroker>();
 
             this.homeService = new HomeService(
                 storageBroker: this.storageBrokerMock.Object,
-                loggingBroker: this.loggingbrokerMock.Object);
+                loggingBroker: this.loggingBrokerMock.Object);
         }
 
         private static Home CreateRandomHome() =>
@@ -44,5 +46,8 @@ namespace Shenam.Api.Tests.Unit.Services.Foundations.Homes
             return filler;
 
         }
+
+        private Expression<Func<Xeption, bool>> SameExceptionAs(Xeption expectedException) =>
+           actualException => actualException.SameExceptionAs(expectedException);
     }
 }
