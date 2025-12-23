@@ -1,39 +1,39 @@
-﻿////===============================================================
-////NODIRBEKNING MOHIRDEV PLATFORMASIDA ORGANGAN API SINOV LOYIHASI
-////===============================================================
+﻿//===============================================================
+//NODIRBEKNING MOHIRDEV PLATFORMASIDA ORGANGAN API SINOV LOYIHASI
+//===============================================================
 
-//using Shenam.API.Models.Foundation.Homes;
-//using Shenam.API.Models.Foundation.Homes.Exceptions;
-//using System;
-//using System.Threading.Tasks;
-//using Xeptions;
+using Shenam.API.Models.Foundation.Homes;
+using Shenam.API.Models.Foundation.Homes.Exceptions;
+using System;
+using System.Threading.Tasks;
+using Xeptions;
 
-//namespace Shenam.API.Services.Foundations.Homes
-//{
-//    public partial class HomeService
-//    {
-//        private delegate ValueTask<Home> ReturnningHomeFunction();
+namespace Shenam.API.Services.Foundations.Homes
+{
+    public partial class HomeService
+    {
+        private delegate ValueTask<Home> ReturnningHomeFunction();
 
-//        private async ValueTask<Home> TryCatch(ReturnningHomeFunction returnningHomeFunction)
-//        {
-//            try
-//            {
-//                return await returnningHomeFunction();
-//            }
-//            catch (NullHomeException nullHomeException)
-//            {
-//                throw CreateAndLogValidationException(nullHomeException);
-//            }
-//        }
+        private async ValueTask<Home> TryCatch(ReturnningHomeFunction returnningHomeFunction)
+        {
+            try
+            {
+                return await returnningHomeFunction();
+            }
+            catch (NullHomeException nullHomeException)
+            {
+                throw CreateAndLogValidationException(nullHomeException);
+            }
+        }
 
-//        private HomeValidationException CreateAndLogValidationException(Xeption exception)
-//        {
-//            var homeValidationException =
-//                new HomeValidationException(exception);
+        private HomeValidationException CreateAndLogValidationException(Xeption exception)
+        {
+            var homeValidationException =
+                new HomeValidationException(exception);
 
-//            this.loggingBroker.LogError(homeValidationException);
+            this.loggingBroker.LogError(homeValidationException);
 
-//            return homeValidationException;
-//        }
-//    }
-//}
+            return homeValidationException;
+        }
+    }
+}
