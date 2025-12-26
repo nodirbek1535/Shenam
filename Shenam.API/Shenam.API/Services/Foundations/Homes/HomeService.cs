@@ -27,30 +27,10 @@ namespace Shenam.API.Services.Foundations.Homes
 
         public async ValueTask<Home> AddHomeAsync(Home home)
         {
-            try
-            {
-                ValidateHomeOnAdd(home);
+            ValidateHomeOnAdd(home);
 
-                return await this.storageBroker.InsertHomeAsync(home);
-            }
-            catch(NullHomeException nullHomeException)
-            {
-                var homeValidationException =
-                    new HomeValidationException(nullHomeException);
+            return await this.storageBroker.InsertHomeAsync(home);
 
-                this.loggingBroker.LogError(homeValidationException);
-
-                throw homeValidationException;
-            }
-            catch(InvalidHomeException invalidHomeException)
-            {
-                var homeValidationException =
-                    new HomeValidationException(invalidHomeException);
-
-                this.loggingBroker.LogError(homeValidationException);
-
-                throw homeValidationException;
-            }
         }
     }
 }

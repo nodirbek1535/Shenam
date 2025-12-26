@@ -32,6 +32,24 @@ namespace Shenam.Api.Tests.Unit.Services.Foundations.Homes
         private static Home CreateRandomHome() =>
             CreateHomeFiller().Create();
 
+        private static int GetRandom() =>
+            new IntRange(min: 4, max: 20).GetValue();
+
+        private static T GetInvalidEnum<T>()
+        { 
+            int randomNumber = GetRandom();
+            while (Enum.IsDefined(typeof(T), randomNumber))
+            {
+                randomNumber = GetRandom();
+            }
+            
+            return (T)Enum.ToObject(typeof(T), randomNumber);
+        }
+
+
+        private Expression<Func<Xeption, bool>> SameExceptionAs(Xeption expectedException) =>
+           actualException => actualException.SameExceptionAs(expectedException);
+
         private static Filler<Home> CreateHomeFiller()
         {
             var filler = new Filler<Home>();
@@ -47,7 +65,5 @@ namespace Shenam.Api.Tests.Unit.Services.Foundations.Homes
 
         }
 
-        private Expression<Func<Xeption, bool>> SameExceptionAs(Xeption expectedException) =>
-           actualException => actualException.SameExceptionAs(expectedException);
     }
 }
