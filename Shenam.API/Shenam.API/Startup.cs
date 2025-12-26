@@ -78,7 +78,9 @@ namespace Shenam.API
         private static void AddFoundationServices(IServiceCollection services)
         {
             services.AddTransient<IGuestService, GuestService>();
-          
+
+            services.AddTransient<IHostEntityService, HostEntityService>();
+
             services.AddTransient<IHomeService, HomeService>();
         }
     }
