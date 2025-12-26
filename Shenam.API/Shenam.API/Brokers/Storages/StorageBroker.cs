@@ -34,9 +34,10 @@ namespace Shenam.API.Brokers.Storages
         {
             throw new System.NotImplementedException();
         }
-        
-        ValueTask<HostEntity> IStorageBroker.InsertHostEntityAsync(HostEntity host)
+
+        async ValueTask<Home> IStorageBroker.InsertHomeAsync(Home home)
         {
+
             throw new System.NotImplementedException();
         }
     }
