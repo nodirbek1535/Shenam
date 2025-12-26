@@ -29,10 +29,7 @@ namespace Shenam.API.Services.Foundations.Homes
         {
             try
             {
-                if (home is null)
-                {
-                    throw new NullHomeException();
-                }
+                ValidateHomeOnAdd(home);
 
                 return await this.storageBroker.InsertHomeAsync(home);
             }
@@ -40,6 +37,15 @@ namespace Shenam.API.Services.Foundations.Homes
             {
                 var homeValidationException =
                     new HomeValidationException(nullHomeException);
+
+                this.loggingBroker.LogError(homeValidationException);
+
+                throw homeValidationException;
+            }
+            catch(InvalidHomeException invalidHomeException)
+            {
+                var homeValidationException =
+                    new HomeValidationException(invalidHomeException);
 
                 this.loggingBroker.LogError(homeValidationException);
 

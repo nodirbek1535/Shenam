@@ -1,4 +1,4 @@
-﻿//===============================================================
+﻿ //===============================================================
 //NODIRBEKNING MOHIRDEV PLATFORMASIDA ORGANGAN API SINOV LOYIHASI
 //===============================================================
 
@@ -23,6 +23,10 @@ namespace Shenam.API.Services.Foundations.Homes
             catch (NullHomeException nullHomeException)
             {
                 throw CreateAndLogValidationException(nullHomeException);
+            }
+            catch(InvalidHomeException invalidHomeException)
+            {
+                throw CreateAndLogValidationException(invalidHomeException);
             }
         }
 

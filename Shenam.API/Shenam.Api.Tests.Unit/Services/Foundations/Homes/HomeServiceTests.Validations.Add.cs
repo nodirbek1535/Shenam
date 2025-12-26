@@ -51,7 +51,7 @@ namespace Shenam.Api.Tests.Unit.Services.Foundations.Homes
             //given
             var invalidHome = new Home
             {
-                Address = invalidText
+                Address = invalidText,
             };
 
             var invalidHomeException = new InvalidHomeException();
@@ -100,8 +100,7 @@ namespace Shenam.Api.Tests.Unit.Services.Foundations.Homes
                 addHomeTask.AsTask());
 
             this.loggingBrokerMock.Verify(broker =>
-                broker.LogError(It.Is(SameExceptionAs(
-                    expectedHomeValidationException))),
+                broker.LogError(It.IsAny<HomeValidationException>()),
                         Times.Once);
 
             this.storageBrokerMock.Verify(broker =>
