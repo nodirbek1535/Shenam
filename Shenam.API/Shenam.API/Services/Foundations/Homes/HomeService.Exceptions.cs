@@ -45,6 +45,13 @@ namespace Shenam.API.Services.Foundations.Homes
 
                 throw CreateAndLogDependencyValidationException(alreadyExistsHomeException);
             }
+            catch(Exception exception)
+            {
+                var failedHomeServiceException =
+                    new FailedHomeServiceException(exception);
+
+                throw CreateAndLogServiceException(failedHomeServiceException);
+            }
         }
 
 
@@ -78,5 +85,14 @@ namespace Shenam.API.Services.Foundations.Homes
             return homeDependencyValidationException;
         }
 
+        private HomeServiceException CreateAndLogServiceException(Xeption exception)
+        {
+            var homeServiceException =
+                new HomeServiceException(exception);
+
+            this.loggingBroker.LogError(homeServiceException);
+
+            return homeServiceException;
+        }
     }
 }
