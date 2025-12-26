@@ -4,12 +4,12 @@
 
 using Xeptions;
 
-namespace Shenam.API.Models.Foundation.Hosts.Exceptions
+namespace Shenam.API.Models.Foundation.Homes.Exceptions
 {
-    public class HostEntityDependencyException : Xeption
+    public class HomeValidationException:Xeption
     {
-        public HostEntityDependencyException(Xeption innerException)
-            : base(message: "Host entity dependency error occurred, contact support",
+        public HomeValidationException(Xeption innerException)
+            : base(message: "Home validation error occurred, fix the errors and try again", 
                   innerException)
         { }
     }

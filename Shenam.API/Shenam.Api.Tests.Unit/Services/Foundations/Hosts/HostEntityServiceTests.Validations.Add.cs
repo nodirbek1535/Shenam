@@ -2,12 +2,6 @@
 //NODIRBEKNING MOHIRDEV PLATFORMASIDA ORGANGAN API SINOV LOYIHASI
 //===============================================================
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Components;
 using Moq;
 using Shenam.API.Models.Foundation.Guests;
 using Shenam.API.Models.Foundation.Hosts;
@@ -111,7 +105,7 @@ namespace Shenam.Api.Tests.Unit.Services.Foundations.Hosts
 
         [Fact]
         public async Task ShouldThrowValidationExceptionOnAddIfGenderIsInvalidAndLogItAsync()
-            {
+        {
             //given
             HostEntity randomHostEntity = CreateRandomHostEntity();
             HostEntity invalidHostEntity = randomHostEntity;

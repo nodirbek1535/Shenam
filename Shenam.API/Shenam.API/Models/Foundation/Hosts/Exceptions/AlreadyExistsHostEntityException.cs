@@ -7,7 +7,7 @@ using Xeptions;
 
 namespace Shenam.API.Models.Foundation.Hosts.Exceptions
 {
-    public class AlreadyExistsHostEntityException:Xeption
+    public class AlreadyExistsHostEntityException : Xeption
     {
         public AlreadyExistsHostEntityException(Exception innerException)
             : base(message: "HostEntity Already exists", innerException)

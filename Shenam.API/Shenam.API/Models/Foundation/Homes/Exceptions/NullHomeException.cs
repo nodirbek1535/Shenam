@@ -4,12 +4,12 @@
 
 using Xeptions;
 
-namespace Shenam.API.Models.Foundation.Hosts.Exceptions
+namespace Shenam.API.Models.Foundation.Homes.Exceptions
 {
-    public class InvalidHostEntityException : Xeption
+    public class NullHomeException:Xeption
     {
-        public InvalidHostEntityException()
-        : base(message: "Host entity is invalid")
+        public NullHomeException()
+            : base(message: "Home is null")
         { }
     }
 }

@@ -14,7 +14,7 @@ namespace Shenam.Api.Tests.Unit.Services.Foundations.Guests
     {
         [Fact]
         public async Task ShouldThrowCriticalDependencyExceptionOnAddIfSqlErrorOccursAndLogItAsync()
-        { 
+        {
             //given
             Guest someGuest = CreateRandomGuest();
             SqlException sqlException = GetSqlError();
@@ -85,7 +85,7 @@ namespace Shenam.Api.Tests.Unit.Services.Foundations.Guests
                 broker.LogError(
                     It.Is(SameExceptionAs(guestDependencyValidationException))),
                       Times.Once);
-          
+
             this.storageBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }

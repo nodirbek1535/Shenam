@@ -2,14 +2,15 @@
 //NODIRBEKNING MOHIRDEV PLATFORMASIDA ORGANGAN API SINOV LOYIHASI
 //===============================================================
 
+using System.Net.Http;
 using Xeptions;
 
-namespace Shenam.API.Models.Foundation.Hosts.Exceptions
+namespace Shenam.API.Models.Foundation.Homes.Exceptions
 {
-    public class InvalidHostEntityException : Xeption
+    public class InvalidHomeException:Xeption
     {
-        public InvalidHostEntityException()
-        : base(message: "Host entity is invalid")
+        public InvalidHomeException()
+            : base(message: "Home is invalid")
         { }
     }
 }

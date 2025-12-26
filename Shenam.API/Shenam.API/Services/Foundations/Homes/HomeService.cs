@@ -2,19 +2,23 @@
 //NODIRBEKNING MOHIRDEV PLATFORMASIDA ORGANGAN API SINOV LOYIHASI
 //===============================================================
 
-using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore.ChangeTracking.Internal;
 using Shenam.API.Brokers.loggings;
 using Shenam.API.Brokers.Storages;
-using Shenam.API.Models.Foundation.Hosts;
+using Shenam.API.Models.Foundation.Guests;
+using Shenam.API.Models.Foundation.Homes;
+using Shenam.API.Models.Foundation.Homes.Exceptions;
+using System;
+using System.Threading.Tasks;
 
-namespace Shenam.API.Services.Foundations.Hosts
+namespace Shenam.API.Services.Foundations.Homes
 {
-    public partial class HostEntityService : IHostEntityService
+    public partial class HomeService:IHomeService
     {
         private readonly IStorageBroker storageBroker;
         private readonly ILoggingBroker loggingBroker;
 
-        public HostEntityService(
+        public HomeService(
             IStorageBroker storageBroker,
             ILoggingBroker loggingBroker)
         {
@@ -22,12 +26,13 @@ namespace Shenam.API.Services.Foundations.Hosts
             this.loggingBroker = loggingBroker;
         }
 
-        public ValueTask<HostEntity> AddHostEntityAsync(HostEntity host) =>
+        public  ValueTask<Home> AddHomeAsync(Home home) =>
         TryCatch(async () =>
-        {
-            ValidateHostEntityOnAdd(host);
+        { 
+            ValidateHomeOnAdd(home);
 
-            return await this.storageBroker.InsertHostEntityAsync(host);
+            return await this.storageBroker.InsertHomeAsync(home);
         });
+
     }
 }
