@@ -5,6 +5,7 @@
 using Microsoft.EntityFrameworkCore.ChangeTracking.Internal;
 using Shenam.API.Brokers.loggings;
 using Shenam.API.Brokers.Storages;
+using Shenam.API.Models.Foundation.Guests;
 using Shenam.API.Models.Foundation.Homes;
 using Shenam.API.Models.Foundation.Homes.Exceptions;
 using System;
@@ -25,12 +26,13 @@ namespace Shenam.API.Services.Foundations.Homes
             this.loggingBroker = loggingBroker;
         }
 
-        public async ValueTask<Home> AddHomeAsync(Home home)
-        {
+        public  ValueTask<Home> AddHomeAsync(Home home) =>
+        TryCatch(async () =>
+        { 
             ValidateHomeOnAdd(home);
 
             return await this.storageBroker.InsertHomeAsync(home);
+        });
 
-        }
     }
 }
