@@ -61,8 +61,8 @@ namespace Shenam.Api.Tests.Unit.Services.Foundations.Homes
             var alreadyExistsHomeException =
                 new AlreadyExistsHomeException(duplicateKeyException);
 
-            var expectedHomeDependencyValidationException =
-                new HomeDependencyException(alreadyExistsHomeException);
+            var homeDependencyValidationException =
+                new HomeDependencyValidationException(alreadyExistsHomeException);
 
             this.storageBrokerMock.Setup(broker =>
                 broker.InsertHomeAsync(someHome))
@@ -73,7 +73,7 @@ namespace Shenam.Api.Tests.Unit.Services.Foundations.Homes
                 this.homeService.AddHomeAsync(someHome);
 
             //then
-            await Assert.ThrowsAsync<HomeDependencyException>(() =>
+            await Assert.ThrowsAsync<HomeDependencyValidationException>(() =>
                 addHomeTask.AsTask());
 
             this.storageBrokerMock.Verify(broker =>
@@ -82,7 +82,7 @@ namespace Shenam.Api.Tests.Unit.Services.Foundations.Homes
 
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogError(
-                    It.Is(SameExceptionAs(expectedHomeDependencyValidationException))),
+                    It.Is(SameExceptionAs(homeDependencyValidationException))),
                 Times.Once);
 
             this.storageBrokerMock.VerifyNoOtherCalls();

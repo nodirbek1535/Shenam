@@ -2,6 +2,7 @@
 //NODIRBEKNING MOHIRDEV PLATFORMASIDA ORGANGAN API SINOV LOYIHASI
 //===============================================================
 
+using EFxceptions.Models.Exceptions;
 using Microsoft.Data.SqlClient;
 using Shenam.API.Models.Foundation.Homes;
 using Shenam.API.Models.Foundation.Homes.Exceptions;
@@ -37,12 +38,13 @@ namespace Shenam.API.Services.Foundations.Homes
 
                 throw CreateAndLogCriticalDependencyException(failedHomeStorageException);
             }
-            //catch (DuplicateKeyException duplicateKeyException)
-            //{
-            //    var alreadyExistsHomeException =
-            //        new AlreadyExistsHomeException(duplicateKeyException);
-            //    throw CreateAndLogDependencyValidationException(alreadyExistsHomeException);
-            //}
+            catch (DuplicateKeyException duplicateKeyException)
+            {
+                var alreadyExistsHomeException =
+                    new AlreadyExistsHomeException(duplicateKeyException);
+
+                throw CreateAndLogDependencyValidationException(alreadyExistsHomeException);
+            }
         }
 
 
@@ -65,10 +67,16 @@ namespace Shenam.API.Services.Foundations.Homes
 
             return homeDependencyException;
         }
-        //private Exception CreateAndLogDependencyValidationException(AlreadyExistsHomeException alreadyExistsHomeException)
-        //{
-        //    throw new NotImplementedException();
-        //}
-        
+
+        private HomeDependencyValidationException CreateAndLogDependencyValidationException(Xeption exception)
+        {
+            var homeDependencyValidationException =
+                new HomeDependencyValidationException(exception);
+
+            this.loggingBroker.LogError(homeDependencyValidationException);
+
+            return homeDependencyValidationException;
+        }
+
     }
 }
