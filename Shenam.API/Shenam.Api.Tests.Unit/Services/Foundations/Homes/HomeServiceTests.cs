@@ -2,12 +2,14 @@
 //NODIRBEKNING MOHIRDEV PLATFORMASIDA ORGANGAN API SINOV LOYIHASI
 //===============================================================
 
+using Microsoft.Data.SqlClient;
 using Moq;
 using Shenam.API.Brokers.loggings;
 using Shenam.API.Brokers.Storages;
 using Shenam.API.Models.Foundation.Homes;
 using Shenam.API.Services.Foundations.Homes;
 using System.Linq.Expressions;
+using System.Runtime.Serialization;
 using Tynamix.ObjectFiller;
 using Xeptions;
 
@@ -32,15 +34,18 @@ namespace Shenam.Api.Tests.Unit.Services.Foundations.Homes
         private static Home CreateRandomHome() =>
             CreateHomeFiller().Create();
 
-        private static int GetRandom() =>
+        private static int GetRandomNumber() =>
             new IntRange(min: 4, max: 20).GetValue();
+
+        private static SqlException GetSqlError() =>
+            (SqlException)FormatterServices.GetUninitializedObject(typeof(SqlException));
 
         private static T GetInvalidEnum<T>()
         { 
-            int randomNumber = GetRandom();
+            int randomNumber = GetRandomNumber();
             while (Enum.IsDefined(typeof(T), randomNumber))
             {
-                randomNumber = GetRandom();
+                randomNumber = GetRandomNumber();
             }
             
             return (T)Enum.ToObject(typeof(T), randomNumber);
