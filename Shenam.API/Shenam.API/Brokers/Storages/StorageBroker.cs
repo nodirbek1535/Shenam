@@ -31,19 +31,31 @@ namespace Shenam.API.Brokers.Storages
 
         public override void Dispose() { }
 
-        ValueTask<Guest> IStorageBroker.InsertGuestAsync(Guest guest)
+        async ValueTask<Guest> IStorageBroker.InsertGuestAsync(Guest guest)
         {
-            throw new System.NotImplementedException();
-        }
-        
-        ValueTask<HostEntity> IStorageBroker.InsertHostEntityAsync(HostEntity host)
-        {
-            throw new System.NotImplementedException();
+            var broker = new StorageBroker(this.configuration);
+            broker.Entry(guest).State = EntityState.Added;
+            await broker.SaveChangesAsync();
+
+            return guest;
         }
 
-        ValueTask<Home> IStorageBroker.InsertHomeAsync(Home home)
+        async ValueTask<HostEntity> IStorageBroker.InsertHostEntityAsync(HostEntity hostEntity)
         {
-            throw new System.NotImplementedException();
+            var broker = new StorageBroker(this.configuration);
+            broker.Entry(hostEntity).State = EntityState.Added;
+            await broker.SaveChangesAsync();
+
+            return hostEntity;
+        }
+
+        async ValueTask<Home> IStorageBroker.InsertHomeAsync(Home home)
+        {
+            var broker = new StorageBroker(this.configuration);
+            broker.Entry(home).State = EntityState.Added;
+            await broker.SaveChangesAsync();
+
+            return home;
         }
     }
 }
