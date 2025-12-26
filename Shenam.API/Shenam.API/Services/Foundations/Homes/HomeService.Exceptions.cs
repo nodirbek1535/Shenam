@@ -53,7 +53,7 @@ namespace Shenam.API.Services.Foundations.Homes
             var homeDependencyException =
                 new HomeDependencyException(exception);
 
-            this.loggingBroker.LogError(homeDependencyException);
+            this.loggingBroker.LogCritical(homeDependencyException);
 
             return homeDependencyException;
         }

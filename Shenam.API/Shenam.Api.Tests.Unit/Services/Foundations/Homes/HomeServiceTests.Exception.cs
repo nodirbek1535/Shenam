@@ -4,7 +4,6 @@
 
 using Microsoft.Data.SqlClient;
 using Moq;
-using RESTFulSense.Models.Foundations.Properties.Exceptions;
 using Shenam.API.Models.Foundation.Homes;
 using Shenam.API.Models.Foundation.Homes.Exceptions;
 
