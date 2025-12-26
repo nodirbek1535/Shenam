@@ -2,6 +2,7 @@
 //NODIRBEKNING MOHIRDEV PLATFORMASIDA ORGANGAN API SINOV LOYIHASI
 //===============================================================
 
+using EFxceptions.Models.Exceptions;
 using Microsoft.Data.SqlClient;
 using Moq;
 using Shenam.API.Models.Foundation.Homes;
@@ -47,6 +48,45 @@ namespace Shenam.Api.Tests.Unit.Services.Foundations.Homes
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }
 
+        [Fact]
+        public async Task ShouldThrowDependencyValidationOnAddIfDuplicateKeyErrorOccursAndLogItAsync()
+        { 
+            //given
+            Home someHome = CreateRandomHome();
+            string someMessage = GetRandomString();
 
+            var duplicateKeyException =
+                new DuplicateKeyException(someMessage);
+
+            var alreadyExistsHomeException =
+                new AlreadyExistsHomeException(duplicateKeyException);
+
+            var expectedHomeDependencyValidationException =
+                new HomeDependencyException(alreadyExistsHomeException);
+
+            this.storageBrokerMock.Setup(broker =>
+                broker.InsertHomeAsync(someHome))
+                    .ThrowsAsync(duplicateKeyException);
+
+            //when
+            ValueTask<Home> addHomeTask =
+                this.homeService.AddHomeAsync(someHome);
+
+            //then
+            await Assert.ThrowsAsync<HomeDependencyException>(() =>
+                addHomeTask.AsTask());
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.InsertHomeAsync(someHome),
+                    Times.Once);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(
+                    It.Is(SameExceptionAs(expectedHomeDependencyValidationException))),
+                Times.Once);
+
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+        }
     }
 }

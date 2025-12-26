@@ -6,6 +6,7 @@ using Microsoft.Data.SqlClient;
 using Shenam.API.Models.Foundation.Homes;
 using Shenam.API.Models.Foundation.Homes.Exceptions;
 using System;
+using System.Linq.Expressions;
 using System.Threading.Tasks;
 using Xeptions;
 
@@ -25,18 +26,25 @@ namespace Shenam.API.Services.Foundations.Homes
             {
                 throw CreateAndLogValidationException(nullHomeException);
             }
-            catch(InvalidHomeException invalidHomeException)
+            catch (InvalidHomeException invalidHomeException)
             {
                 throw CreateAndLogValidationException(invalidHomeException);
             }
-            catch(SqlException sqlException)
+            catch (SqlException sqlException)
             {
                 var failedHomeStorageException =
                     new FailedHomeStorageException(sqlException);
 
                 throw CreateAndLogCriticalDependencyException(failedHomeStorageException);
             }
+            //catch (DuplicateKeyException duplicateKeyException)
+            //{
+            //    var alreadyExistsHomeException =
+            //        new AlreadyExistsHomeException(duplicateKeyException);
+            //    throw CreateAndLogDependencyValidationException(alreadyExistsHomeException);
+            //}
         }
+
 
         private HomeValidationException CreateAndLogValidationException(Xeption exception)
         {
@@ -57,5 +65,10 @@ namespace Shenam.API.Services.Foundations.Homes
 
             return homeDependencyException;
         }
+        //private Exception CreateAndLogDependencyValidationException(AlreadyExistsHomeException alreadyExistsHomeException)
+        //{
+        //    throw new NotImplementedException();
+        //}
+        
     }
 }
