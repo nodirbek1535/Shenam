@@ -11,8 +11,8 @@ namespace Shenam.API.Brokers.Storages
 {
     public partial class StorageBroker
     {
-        public DbSet<HomeRequest> HomeRequests { get; set; }   
-        
+        public DbSet<HomeRequest> HomeRequests { get; set; }
+
         public async ValueTask<HomeRequest> InsertHomeRequestAsync(HomeRequest homeRequest)
         {
             using var broker = new StorageBroker(this.configuration);

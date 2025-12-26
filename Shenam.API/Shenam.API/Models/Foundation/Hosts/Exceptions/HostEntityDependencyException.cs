@@ -2,15 +2,14 @@
 //NODIRBEKNING MOHIRDEV PLATFORMASIDA ORGANGAN API SINOV LOYIHASI
 //===============================================================
 
-using System;
 using Xeptions;
 
-namespace Shenam.API.Models.Foundation.Guests.Exceptions
+namespace Shenam.API.Models.Foundation.Hosts.Exceptions
 {
-    public class GuestServiceException : Xeption
+    public class HostEntityDependencyException : Xeption
     {
-        public GuestServiceException(Exception innerException)
-            : base(message: "Guest service error occurred, contact support",
+        public HostEntityDependencyException(Xeption innerException)
+            : base(message: "Host entity dependency error occurred, contact support",
                   innerException)
         { }
     }

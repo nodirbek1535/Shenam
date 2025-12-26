@@ -2,6 +2,7 @@
 //NODIRBEKNING MOHIRDEV PLATFORMASIDA ORGANGAN API SINOV LOYIHASI
 //===============================================================
 
+using System;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
@@ -22,6 +23,11 @@ namespace Shenam.API.Brokers.Storages
             await broker.SaveChangesAsync();
 
             return hostEntityEntry.Entity;
+        }
+
+        public void InsertHostEntityAsync(HostEntity randomHostEntity)
+        {
+            throw new NotImplementedException();
         }
     }
 }

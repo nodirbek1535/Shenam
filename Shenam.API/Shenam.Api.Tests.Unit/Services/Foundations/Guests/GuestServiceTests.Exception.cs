@@ -1,4 +1,4 @@
-﻿//===============================================================
+//===============================================================
 //NODIRBEKNING MOHIRDEV PLATFORMASIDA ORGANGAN API SINOV LOYIHASI
 //===============================================================
 
@@ -30,7 +30,6 @@ namespace Shenam.Api.Tests.Unit.Services.Foundations.Guests
             //when                     
             ValueTask<Guest> addGuestTask =
                 this.guestService.AddGuestAsync(someGuest);
-
 
             //then
             await Assert.ThrowsAsync<GuestDependencyException>(() =>
@@ -85,7 +84,7 @@ namespace Shenam.Api.Tests.Unit.Services.Foundations.Guests
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogError(
                     It.Is(SameExceptionAs(guestDependencyValidationException))),
-                Times.Once);
+                      Times.Once);
 
             this.storageBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();

@@ -12,7 +12,7 @@ namespace Shenam.API.Models.Foundation.Homes
         public Guid Id { get; set; }
         public Guid HostId { get; set; }
         public string Address { get; set; }
-        public string AdditionalInfo {  get; set; }
+        public string AdditionalInfo { get; set; }
         public bool IsVacant { get; set; }
         public int NumberOfBedrooms {  get; set; }
         public int NumberOfBathrooms {  get; set; }

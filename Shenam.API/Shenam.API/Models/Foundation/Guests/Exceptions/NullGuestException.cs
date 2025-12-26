@@ -1,8 +1,6 @@
-﻿//===============================================================
+//===============================================================
 //NODIRBEKNING MOHIRDEV PLATFORMASIDA ORGANGAN API SINOV LOYIHASI
 //===============================================================
-
-
 using Xeptions;
 
 namespace Shenam.API.Models.Foundation.Guests.Exceptions
