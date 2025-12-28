@@ -2,6 +2,7 @@
 //NODIRBEKNING MOHIRDEV PLATFORMASIDA ORGANGAN API SINOV LOYIHASI
 //===============================================================
 
+using Shenam.API.Brokers.loggings;
 using Shenam.API.Brokers.Storages;
 using Shenam.API.Models.Foundation.HomeRequests;
 using System;
@@ -12,10 +13,21 @@ namespace Shenam.API.Services.Foundations.HomeRequests
     public partial class HomeRequestService:IHomeRequestService
     {
         private readonly IStorageBroker storageBroker;
-        public HomeRequestService(IStorageBroker storageBroker) =>
-            this.storageBroker = storageBroker;
+        private readonly ILoggingBroker loggingBroker;
 
-        public ValueTask<HomeRequest> AddHomeRequestAsync(HomeRequest homeRequest) =>
-            throw new NotImplementedException();
+        public HomeRequestService(
+            IStorageBroker storageBroker, 
+            ILoggingBroker loggingBroker)
+        {
+            this.storageBroker = storageBroker;
+            this.loggingBroker = loggingBroker;
+        }
+
+        public ValueTask<HomeRequest> AddHomeRequestAsync(HomeRequest homeRequest)
+        {
+            ValidateHomeRequestOnAdd(homeRequest);
+
+            return this.storageBroker.InsertHomeRequestAsync(homeRequest);
+        }
     }
 }
