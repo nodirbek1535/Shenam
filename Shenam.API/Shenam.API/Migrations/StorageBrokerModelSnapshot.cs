@@ -51,6 +51,29 @@ namespace Shenam.API.Migrations
 
                     b.ToTable("Guests");
                 });
+
+            modelBuilder.Entity("Shenam.API.Models.Foundation.HomeRequests.HomeRequest", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+                    b.Property<DateTimeOffset>("CreatedDate")
+                        .HasColumnType("datetimeoffset");
+                    b.Property<DateTimeOffset>("EndDate")
+                        .HasColumnType("datetimeoffset");
+                    b.Property<Guid>("GuestId")
+                        .HasColumnType("uniqueidentifier");
+                    b.Property<Guid>("HomeId")
+                        .HasColumnType("uniqueidentifier");
+                    b.Property<string>("Message")
+                        .HasColumnType("nvarchar(max)");
+                    b.Property<DateTimeOffset>("StartDate")
+                        .HasColumnType("datetimeoffset");
+                    b.Property<DateTimeOffset>("UpdatedDate")
+                        .HasColumnType("datetimeoffset");
+                    b.HasKey("Id");
+                    b.ToTable("HomeRequests");
+                });
 #pragma warning restore 612, 618
         }
     }
