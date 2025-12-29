@@ -7,7 +7,9 @@ using Shenam.API.Brokers.loggings;
 using Shenam.API.Brokers.Storages;
 using Shenam.API.Models.Foundation.HomeRequests;
 using Shenam.API.Services.Foundations.HomeRequests;
+using System.Linq.Expressions;
 using Tynamix.ObjectFiller;
+using Xeptions;
 
 namespace Shenam.Api.Tests.Unit.Services.Foundations.HomeRequests
 {
@@ -38,7 +40,9 @@ namespace Shenam.Api.Tests.Unit.Services.Foundations.HomeRequests
                 .OnType<DateTimeOffset>().Use(DateTimeOffset.UtcNow);
 
             return filler;
-
         }
+
+        private Expression<Func<Xeption, bool>> SameExceptionAs(Xeption expectedException) =>
+            actualException => actualException.SameExceptionAs(expectedException);
     }
 }

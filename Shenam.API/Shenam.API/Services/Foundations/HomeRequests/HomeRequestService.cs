@@ -5,6 +5,7 @@
 using Shenam.API.Brokers.loggings;
 using Shenam.API.Brokers.Storages;
 using Shenam.API.Models.Foundation.HomeRequests;
+using Shenam.API.Models.Foundation.HomeRequests.Exceptions;
 using System;
 using System.Threading.Tasks;
 
@@ -23,11 +24,26 @@ namespace Shenam.API.Services.Foundations.HomeRequests
             this.loggingBroker = loggingBroker;
         }
 
-        public ValueTask<HomeRequest> AddHomeRequestAsync(HomeRequest homeRequest)
+        public async ValueTask<HomeRequest> AddHomeRequestAsync(HomeRequest homeRequest)
         {
-            ValidateHomeRequestOnAdd(homeRequest);
+            try
+            {
+                if(homeRequest == null)
+                {
+                    throw new NullHomeRequestException();
+                }
 
-            return this.storageBroker.InsertHomeRequestAsync(homeRequest);
+                return await this.storageBroker.InsertHomeRequestAsync(homeRequest);
+            }
+            catch(NullHomeRequestException nullHomeRequestException)
+            {
+                var homeRequestValidationException =
+                    new HomeRequestValidationException(nullHomeRequestException);
+
+                this.loggingBroker.LogError(homeRequestValidationException);
+
+                throw homeRequestValidationException;
+            }
         }
     }
 }
