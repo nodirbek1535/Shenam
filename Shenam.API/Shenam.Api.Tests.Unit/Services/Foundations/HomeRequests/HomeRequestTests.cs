@@ -2,12 +2,14 @@
 //NODIRBEKNING MOHIRDEV PLATFORMASIDA ORGANGAN API SINOV LOYIHASI
 //===============================================================
 
+using Microsoft.Data.SqlClient;
 using Moq;
 using Shenam.API.Brokers.loggings;
 using Shenam.API.Brokers.Storages;
 using Shenam.API.Models.Foundation.HomeRequests;
 using Shenam.API.Services.Foundations.HomeRequests;
 using System.Linq.Expressions;
+using System.Runtime.Serialization;
 using Tynamix.ObjectFiller;
 using Xeptions;
 
@@ -31,6 +33,9 @@ namespace Shenam.Api.Tests.Unit.Services.Foundations.HomeRequests
 
         private static HomeRequest CreateRandomHomeRequest() =>
             CreateHomeRequestFiller().Create(); 
+
+        private static SqlException GetSqlError()=>
+            (SqlException)FormatterServices.GetUninitializedObject(typeof(SqlException));
 
         private static Filler<HomeRequest> CreateHomeRequestFiller()
         {
