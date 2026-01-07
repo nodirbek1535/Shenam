@@ -23,32 +23,13 @@ namespace Shenam.API.Services.Foundations.HomeRequests
             this.loggingBroker = loggingBroker;
         }
 
-        public async ValueTask<HomeRequest> AddHomeRequestAsync(HomeRequest homeRequest)
-        {
-            try
+        public ValueTask<HomeRequest> AddHomeRequestAsync(HomeRequest homeRequest) =>
+            TryCatch(async () =>
             {
                 ValidateHomeRequestOnAdd(homeRequest);
 
                 return await this.storageBroker.InsertHomeRequestAsync(homeRequest);
-            }
-            catch(NullHomeRequestException nullHomeRequestException)
-            {
-                var homeRequestValidationException =
-                    new HomeRequestValidationException(nullHomeRequestException);
+            });
 
-                this.loggingBroker.LogError(homeRequestValidationException);
-
-                throw homeRequestValidationException;
-            }
-            catch(InvalidHomeRequestException invalidHomeRequestException)
-            {
-                var homeRequestValidationException =
-                    new HomeRequestValidationException(invalidHomeRequestException);
-
-                this.loggingBroker.LogError(homeRequestValidationException);
-
-                throw homeRequestValidationException;
-            }
-        }
     }
 }

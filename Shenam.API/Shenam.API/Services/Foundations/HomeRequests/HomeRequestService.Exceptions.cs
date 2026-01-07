@@ -2,6 +2,7 @@
 //NODIRBEKNING MOHIRDEV PLATFORMASIDA ORGANGAN API SINOV LOYIHASI
 //===============================================================
 
+using Microsoft.Data.SqlClient;
 using Shenam.API.Models.Foundation.HomeRequests;
 using Shenam.API.Models.Foundation.HomeRequests.Exceptions;
 using System.Threading.Tasks;
@@ -28,6 +29,11 @@ namespace Shenam.API.Services.Foundations.HomeRequests
             {
                 throw CreateAndLogValidationException(invalidHomeRequestException);
             }
+            catch(SqlException sqlException)
+            {
+                var failedHomeRequestStorageException = new FailedHomeRequestStorageException(sqlException);
+                throw CreateAndLogCriticalDependencyException(failedHomeRequestStorageException);
+            }
         }
 
         private HomeRequestValidationException CreateAndLogValidationException(Xeption exception)
@@ -38,6 +44,16 @@ namespace Shenam.API.Services.Foundations.HomeRequests
             this.loggingBroker.LogError(homeRequestValidationException);
 
             return homeRequestValidationException;
+        }
+
+        private HomeRequestDependencyException CreateAndLogCriticalDependencyException(Xeption exception)
+        {
+            var homeRequestDependencyException =
+                new HomeRequestDependencyException(exception);
+
+            this.loggingBroker.LogCritical(homeRequestDependencyException);
+
+            return homeRequestDependencyException;
         }
     }
 }
