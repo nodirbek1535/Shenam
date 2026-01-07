@@ -4,7 +4,6 @@
 
 using Shenam.API.Models.Foundation.HomeRequests;
 using Shenam.API.Models.Foundation.HomeRequests.Exceptions;
-using System;
 using System.Threading.Tasks;
 using Xeptions;
 
@@ -24,6 +23,10 @@ namespace Shenam.API.Services.Foundations.HomeRequests
             catch (NullHomeRequestException nullHomeRequestException)
             {
                 throw CreateAndLogValidationException(nullHomeRequestException);
+            }
+            catch(InvalidHomeRequestException invalidHomeRequestException)
+            {
+                throw CreateAndLogValidationException(invalidHomeRequestException);
             }
         }
 

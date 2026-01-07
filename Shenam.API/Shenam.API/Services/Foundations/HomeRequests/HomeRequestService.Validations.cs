@@ -39,19 +39,19 @@ namespace Shenam.API.Services.Foundations.HomeRequests
         private static dynamic IsInvalid(Guid id) => new
         {
             Condition = id == Guid.Empty,
-            Message = "Id is required."
+            Message = "Id is required"
         };
 
         private static dynamic IsInvalid(string text) => new
         {
             Condition = string.IsNullOrWhiteSpace(text),
-            Message = "Text is required."
+            Message = "Text is required"
         };
 
         private static dynamic IsInvalid(DateTimeOffset date) => new
         {
             Condition = date == default,
-            Message = "Date is required."
+            Message = "Date is required"
         };
 
         private void Validate(params (dynamic Rule, string Parameter)[] validations)

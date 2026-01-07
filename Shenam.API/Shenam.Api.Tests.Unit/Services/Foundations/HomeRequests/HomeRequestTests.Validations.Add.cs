@@ -5,7 +5,6 @@
 using Moq;
 using Shenam.API.Models.Foundation.HomeRequests;
 using Shenam.API.Models.Foundation.HomeRequests.Exceptions;
-using System.Threading.Tasks;
 
 namespace Shenam.Api.Tests.Unit.Services.Foundations.HomeRequests
 {
