@@ -10,6 +10,7 @@ using Microsoft.OpenApi.Models;
 using Shenam.API.Brokers.loggings;
 using Shenam.API.Brokers.Storages;
 using Shenam.API.Services.Foundations.Guests;
+using Shenam.API.Services.Foundations.HomeRequests;
 using Shenam.API.Services.Foundations.Homes;
 using Shenam.API.Services.Foundations.Hosts;
 
@@ -82,6 +83,8 @@ namespace Shenam.API
             services.AddTransient<IHostEntityService, HostEntityService>();
 
             services.AddTransient<IHomeService, HomeService>();
+
+            services.AddTransient<IHomeRequestService, HomeRequestService>();
         }
     }
 }
