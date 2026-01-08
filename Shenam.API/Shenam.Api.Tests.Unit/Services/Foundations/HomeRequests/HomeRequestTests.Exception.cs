@@ -2,6 +2,7 @@
 //NODIRBEKNING MOHIRDEV PLATFORMASIDA ORGANGAN API SINOV LOYIHASI
 //===============================================================
 
+using EFxceptions.Models.Exceptions;
 using Microsoft.Data.SqlClient;
 using Moq;
 using Shenam.API.Models.Foundation.HomeRequests;
@@ -18,7 +19,7 @@ namespace Shenam.Api.Tests.Unit.Services.Foundations.HomeRequests
             HomeRequest someHomeRequest = CreateRandomHomeRequest();
             SqlException sqlException = GetSqlError();
 
-            var failedHomeRequestStorageException = 
+            var failedHomeRequestStorageException =
                 new FailedHomeRequestStorageException(sqlException);
 
             var expectedHomeRequestDependencyException =
@@ -48,6 +49,47 @@ namespace Shenam.Api.Tests.Unit.Services.Foundations.HomeRequests
             this.storageBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
 
+        }
+
+        [Fact]
+        public async Task ShouldThrowDependencyValidationOnAddIfDuplicateKeyErrorOccursAndLogItAsync()
+        { 
+            //given
+            HomeRequest someHomeRequest = CreateRandomHomeRequest();
+            string someMessage = GetRandomString();
+
+            var duplicateKeyException =
+                new DuplicateKeyException(someMessage);
+
+            var alreadyExistsHomeRequestException =
+                new AlreadyExistsHomeRequestException(duplicateKeyException);
+
+            var homeRequestDependencyValidationException =
+                new HomeRequestDependencyValidationException(alreadyExistsHomeRequestException);    
+
+            this.storageBrokerMock.Setup(broker =>
+                broker.InsertHomeRequestAsync(someHomeRequest))
+                    .ThrowsAsync(duplicateKeyException);
+
+            //when
+            ValueTask<HomeRequest> addHomeRequestTask =
+                this.homeRequestService.AddHomeRequestAsync(someHomeRequest);
+
+            //then
+            await Assert.ThrowsAsync<HomeRequestDependencyValidationException>(() =>
+                addHomeRequestTask.AsTask());
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.InsertHomeRequestAsync(someHomeRequest),
+                    Times.Once);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(
+                    It.Is(SameExceptionAs(homeRequestDependencyValidationException))),
+                Times.Once);
+
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
         }
     }
 }

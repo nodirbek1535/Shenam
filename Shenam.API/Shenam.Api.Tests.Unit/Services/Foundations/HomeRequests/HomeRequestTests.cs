@@ -37,6 +37,9 @@ namespace Shenam.Api.Tests.Unit.Services.Foundations.HomeRequests
         private static SqlException GetSqlError()=>
             (SqlException)FormatterServices.GetUninitializedObject(typeof(SqlException));
 
+        private static string GetRandomString() =>
+            new MnemonicString().GetValue();
+
         private static Filler<HomeRequest> CreateHomeRequestFiller()
         {
             var filler = new Filler<HomeRequest>();
