@@ -9,6 +9,9 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
 using Shenam.API.Brokers.loggings;
 using Shenam.API.Brokers.Storages;
+using Shenam.API.Services.Foundations.Guests;
+using Shenam.API.Services.Foundations.Homes;
+using Shenam.API.Services.Foundations.Hosts;
 
 namespace Shenam.API
 {
@@ -30,7 +33,9 @@ namespace Shenam.API
 
             services.AddControllers();
             services.AddDbContext<StorageBroker>();
+
             AddBrokers(services);
+            AddFoundationServices(services);
 
             services.AddSwaggerGen(options =>
             {
@@ -42,6 +47,7 @@ namespace Shenam.API
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment envirovment)
         {
+
             if (envirovment.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
@@ -62,10 +68,20 @@ namespace Shenam.API
             app.UseEndpoints(endpoints =>
                 endpoints.MapControllers());
         }
+
         private static void AddBrokers(IServiceCollection services)
         {
             services.AddTransient<IStorageBroker, StorageBroker>();
             services.AddTransient<ILoggingBroker, LoggingBroker>();
+        }
+
+        private static void AddFoundationServices(IServiceCollection services)
+        {
+            services.AddTransient<IGuestService, GuestService>();
+
+            services.AddTransient<IHostEntityService, HostEntityService>();
+
+            services.AddTransient<IHomeService, HomeService>();
         }
     }
 }

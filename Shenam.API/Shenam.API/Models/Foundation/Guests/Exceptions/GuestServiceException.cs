@@ -9,9 +9,9 @@ namespace Shenam.API.Models.Foundation.Guests.Exceptions
 {
     public class GuestServiceException : Xeption
     {
-        public GuestServiceException(Exception innerexcception)
+        public GuestServiceException(Exception innerException)
             : base(message: "Guest service error occurred, contact support",
-                  innerexcception)
+                  innerException)
         { }
     }
 }
