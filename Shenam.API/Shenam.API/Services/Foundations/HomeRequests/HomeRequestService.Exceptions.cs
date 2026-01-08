@@ -6,6 +6,7 @@ using EFxceptions.Models.Exceptions;
 using Microsoft.Data.SqlClient;
 using Shenam.API.Models.Foundation.HomeRequests;
 using Shenam.API.Models.Foundation.HomeRequests.Exceptions;
+using System;
 using System.Net.NetworkInformation;
 using System.Threading.Tasks;
 using Xeptions;
@@ -43,6 +44,13 @@ namespace Shenam.API.Services.Foundations.HomeRequests
 
                 throw CreateAndLogDependencyValidationException(alreadyExistsHomeRequestException);
             }
+            catch (Exception exception)
+            {
+                var failedHomeRequestServiceException =
+                    new FailedHomeRequestServiceException(exception);
+
+                throw CreateAndLogServiceException(failedHomeRequestServiceException);
+            }
         }
 
         private HomeRequestValidationException CreateAndLogValidationException(Xeption exception)
@@ -73,6 +81,16 @@ namespace Shenam.API.Services.Foundations.HomeRequests
             this.loggingBroker.LogError(homeRequestDependencyValidationException);
 
             return homeRequestDependencyValidationException;
+        }
+
+        private HomeRequestServiceException CreateAndLogServiceException(Xeption exception)
+        {
+            var homeRequestServiceException =
+                new HomeRequestServiceException(exception);
+
+            this.loggingBroker.LogError(homeRequestServiceException);
+
+            return homeRequestServiceException;
         }
     }
 }
