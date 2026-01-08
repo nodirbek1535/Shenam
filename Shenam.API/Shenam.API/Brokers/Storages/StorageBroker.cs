@@ -7,6 +7,7 @@ using EFxceptions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Shenam.API.Models.Foundation.Guests;
+using Shenam.API.Models.Foundation.HomeRequests;
 using Shenam.API.Models.Foundation.Homes;
 using Shenam.API.Models.Foundation.Hosts;
 
@@ -56,6 +57,15 @@ namespace Shenam.API.Brokers.Storages
             await broker.SaveChangesAsync();
 
             return home;
+        }
+
+        async ValueTask<HomeRequest> IStorageBroker.InsertHomeRequestAsync(HomeRequest homeRequest)
+        {
+            var broker = new StorageBroker(this.configuration);
+            broker.Entry(homeRequest).State = EntityState.Added;
+            await broker.SaveChangesAsync();
+
+            return homeRequest;
         }
     }
 }
