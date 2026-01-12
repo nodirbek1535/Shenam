@@ -2,6 +2,7 @@
 //NODIRBEKNING MOHIRDEV PLATFORMASIDA ORGANGAN API SINOV LOYIHASI
 //===============================================================
 
+using System;
 using System.Threading.Tasks;
 using Shenam.API.Brokers.loggings;
 using Shenam.API.Brokers.Storages;
@@ -29,5 +30,19 @@ namespace Shenam.API.Services.Foundations.Guests
 
             return await this.storageBroker.InsertGuestAsync(guest);
         });
+
+        public ValueTask<Guest> RetrieveGuestByIdAsync(Guid guestId) =>
+        TryCatch(async () =>
+        {
+            ValidateGuestId(guestId);
+
+            Guest maybeGuest =
+                await this.storageBroker.SelectGuestByIdAsync(guestId);
+
+            ValidateStorageGuest(maybeGuest, guestId);
+
+            return maybeGuest;
+        });
+
     }
 }
