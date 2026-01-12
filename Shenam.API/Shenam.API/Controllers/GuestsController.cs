@@ -2,12 +2,13 @@
 //NODIRBEKNING MOHIRDEV PLATFORMASIDA ORGANGAN API SINOV LOYIHASI
 //===============================================================
 
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using RESTFulSense.Controllers;
 using Shenam.API.Models.Foundation.Guests;
 using Shenam.API.Models.Foundation.Guests.Exceptions;
 using Shenam.API.Services.Foundations.Guests;
+using System;
+using System.Threading.Tasks;
 
 namespace Shenam.API.Controllers
 {
@@ -50,5 +51,30 @@ namespace Shenam.API.Controllers
                 return InternalServerError(guestServiceException.InnerException);
             }
         }
+
+        [HttpGet("{guestId}")]
+        public async ValueTask<ActionResult<Guest>> GetGuestByIdAsync(Guid guestId)
+        {
+            try
+            {
+                Guest guest =
+                    await this.guestService.RetrieveGuestByIdAsync(guestId);
+
+                return Ok(guest);
+            }
+            catch (GuestValidationException guestValidationException)
+            {
+                return BadRequest(guestValidationException.InnerException);
+            }
+            catch (GuestDependencyException guestDependencyException)
+            {
+                return InternalServerError(guestDependencyException.InnerException);
+            }
+            catch (GuestServiceException guestServiceException)
+            {
+                return InternalServerError(guestServiceException.InnerException);
+            }
+        }
+
     }
 }
