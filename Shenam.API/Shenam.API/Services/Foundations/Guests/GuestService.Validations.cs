@@ -26,12 +26,19 @@ namespace Shenam.API.Services.Foundations.Guests
                     );
         }
 
+
         private void ValidateGuestNotNull(Guest guest)
         {
             if (guest is null)
             {
                 throw new NullGuestException();
             }
+        }
+
+        private void ValidateGuestId(Guid guest)
+        { 
+            Validate(
+                (Rule: IsInvalid(guest), Parameter: nameof(Guest.Id)));
         }
 
         private static dynamic IsInvalid(Guid id) => new

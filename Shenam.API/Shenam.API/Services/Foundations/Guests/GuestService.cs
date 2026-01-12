@@ -31,10 +31,13 @@ namespace Shenam.API.Services.Foundations.Guests
             return await this.storageBroker.InsertGuestAsync(guest);
         });
 
-        public async ValueTask<Guest> RetrieveGuestByIdAsync(Guid guestId)
+        public ValueTask<Guest> RetrieveGuestByIdAsync(Guid guestId) =>
+        TryCatch(async () =>
         {
-            return await this.storageBroker.SelectGuestByIdAsync(guestId);  
-        }
+            ValidateGuestId(guestId);
+
+            return await this.storageBroker.SelectGuestByIdAsync(guestId);
+        });
 
     }
 }
