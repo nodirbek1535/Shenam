@@ -41,6 +41,14 @@ namespace Shenam.API.Services.Foundations.Guests
                     new AlreadyExistsGuestException(duplicateKeyException);
                 throw CreateAndLogDependencyValidationException(alreadyExistsGuestException);
             }
+            catch (NotFoundGuestException notFoundGuestException)
+            {
+                var guestValidationException =
+                    new GuestValidationException(notFoundGuestException);
+
+                this.loggingBroker.LogError(guestValidationException);
+                throw guestValidationException;
+            }
             catch (Exception exception)
             {
                 var failedGuestServiceException =

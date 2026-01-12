@@ -36,6 +36,11 @@ namespace Shenam.API.Services.Foundations.Guests
         {
             ValidateGuestId(guestId);
 
+            Guest maybeGuest =
+                await this.storageBroker.SelectGuestByIdAsync(guestId);
+
+            ValidateStorageGuest(maybeGuest, guestId);
+
             return await this.storageBroker.SelectGuestByIdAsync(guestId);
         });
 

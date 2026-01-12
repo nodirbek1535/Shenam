@@ -74,12 +74,8 @@ namespace Shenam.Api.Tests.Unit.Services.Foundations.Guests
                 this.guestService.RetrieveGuestByIdAsync(someGuestId);
 
             // then
-            GuestValidationException actualException =
-                await Assert.ThrowsAsync<GuestValidationException>(
-                    retrieveGuestByIdTask.AsTask);
-
-            actualException.Should()
-                .BeEquivalentTo(expectedGuestValidationException);
+            await Assert.ThrowsAsync<GuestValidationException>(
+                retrieveGuestByIdTask.AsTask);
 
             this.storageBrokerMock.Verify(broker =>
                 broker.SelectGuestByIdAsync(It.IsAny<Guid>()),

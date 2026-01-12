@@ -41,6 +41,13 @@ namespace Shenam.API.Services.Foundations.Guests
                 (Rule: IsInvalid(guest), Parameter: nameof(Guest.Id)));
         }
 
+        private static void ValidateStorageGuest(Guest maybeGuest, Guid guestId)
+        {
+            if (maybeGuest is null)
+            {
+                throw new NotFoundGuestException(guestId);
+            }
+        }   
         private static dynamic IsInvalid(Guid id) => new
         {
             Condition = id == Guid.Empty,
