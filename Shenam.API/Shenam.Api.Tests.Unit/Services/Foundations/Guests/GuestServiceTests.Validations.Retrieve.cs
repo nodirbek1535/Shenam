@@ -2,6 +2,7 @@
 //NODIRBEKNING MOHIRDEV PLATFORMASIDA ORGANGAN API SINOV LOYIHASI
 //===============================================================
 
+using FluentAssertions;
 using Moq;
 using Shenam.API.Models.Foundation.Guests;
 using Shenam.API.Models.Foundation.Guests.Exceptions;
@@ -49,6 +50,49 @@ namespace Shenam.Api.Tests.Unit.Services.Foundations.Guests
 
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
-        }   
+        }
+
+        [Fact]
+        public async Task ShouldThrowNotFoundExceptionOnRetrieveByIdIfGuestIsNotFoundAndLogItAsync()
+        {
+            // given
+            Guid someGuestId = Guid.NewGuid();
+            Guest noGuest = null;
+
+            var notFoundGuestException =
+                new NotFoundGuestException(someGuestId);
+
+            var expectedGuestValidationException =
+                new GuestValidationException(notFoundGuestException);
+
+            this.storageBrokerMock.Setup(broker =>
+                broker.SelectGuestByIdAsync(It.IsAny<Guid>()))
+                    .ReturnsAsync(noGuest);
+
+            // when
+            ValueTask<Guest> retrieveGuestByIdTask =
+                this.guestService.RetrieveGuestByIdAsync(someGuestId);
+
+            // then
+            GuestValidationException actualException =
+                await Assert.ThrowsAsync<GuestValidationException>(
+                    retrieveGuestByIdTask.AsTask);
+
+            actualException.Should()
+                .BeEquivalentTo(expectedGuestValidationException);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.SelectGuestByIdAsync(It.IsAny<Guid>()),
+                    Times.Once);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(
+                    SameExceptionAs(expectedGuestValidationException))),
+                        Times.Once);
+
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+        }
+
     }
 }
