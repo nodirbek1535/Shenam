@@ -70,6 +70,11 @@ namespace Shenam.API.Services.Foundations.Guests
                 var failedServiceException =
                     new FailedGuestServiceException(exception);
 
+                var guestServiceException =
+                    new GuestServiceException(failedServiceException);
+
+                this.loggingBroker.LogError(guestServiceException); 
+
                 throw new GuestServiceException(failedServiceException);
             }
         }
