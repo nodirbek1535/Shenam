@@ -2,11 +2,14 @@
 //NODIRBEKNING MOHIRDEV PLATFORMASIDA ORGANGAN API SINOV LOYIHASI
 //===============================================================
 
-using System;
-using System.Threading.Tasks;
+using Microsoft.Data.SqlClient;
 using Shenam.API.Brokers.loggings;
 using Shenam.API.Brokers.Storages;
 using Shenam.API.Models.Foundation.Guests;
+using Shenam.API.Models.Foundation.Guests.Exceptions;
+using System;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace Shenam.API.Services.Foundations.Guests
 {
@@ -43,6 +46,29 @@ namespace Shenam.API.Services.Foundations.Guests
 
             return maybeGuest;
         });
+
+        public IQueryable<Guest> RetrieveAllGuests()
+        {
+            try
+            {
+                return this.storageBroker.SelectAllGuests();
+            }
+            catch (SqlException sqlException)
+            {
+                var failedStorageException =
+                    new FailedGuestStorageException(sqlException);
+
+                throw new GuestDependencyException(failedStorageException);
+            }
+            catch (Exception exception)
+            {
+                var failedServiceException =
+                    new FailedGuestServiceException(exception);
+
+                throw new GuestServiceException(failedServiceException);
+            }
+        }
+
 
     }
 }
