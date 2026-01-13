@@ -54,5 +54,45 @@ namespace Shenam.Api.Tests.Unit.Services.Foundations.Guests
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }
 
+        [Fact]
+        public void ShouldThrowServiceExceptionOnRetrieveAllIfServiceErrorOccursAndLogIt()
+        {
+            // given
+            var serviceException = new Exception(GetRandomString());
+
+            var failedServiceException =
+                new FailedGuestServiceException(serviceException);
+
+            var expectedServiceException =
+                new GuestServiceException(failedServiceException);
+
+            this.storageBrokerMock.Setup(broker =>
+                broker.SelectAllGuests())
+                    .Throws(serviceException);
+
+            // when
+            Action retrieveAllGuestsAction = () =>
+                this.guestService.RetrieveAllGuests();
+
+            // then
+            GuestServiceException actualException =
+                Assert.Throws<GuestServiceException>(retrieveAllGuestsAction);
+
+            actualException
+                .SameExceptionAs(expectedServiceException)
+                .Should().BeTrue();
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.SelectAllGuests(), Times.Once);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(
+                    SameExceptionAs(expectedServiceException))),
+                        Times.Once);
+
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+        }
+
     }
 }
