@@ -6,6 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Shenam.API.Models.Foundation.Guests;
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace Shenam.API.Brokers.Storages
@@ -25,13 +26,17 @@ namespace Shenam.API.Brokers.Storages
             return guestEntityEntry.Entity;
         }
 
-        public async ValueTask<Guest> SelectClientByIdAsync(Guid guestId)
+        public async ValueTask<Guest> SelectGuestByIdAsync(Guid guestId)
         {
             using var broker = new StorageBroker(this.configuration);
 
             return await broker.Guests
                 .FirstOrDefaultAsync(guest => guest.Id == guestId);
         }
+
+        public IQueryable<Guest> SelectAllGuests() =>
+            SelectAll<Guest>();
+
 
     }
 }
