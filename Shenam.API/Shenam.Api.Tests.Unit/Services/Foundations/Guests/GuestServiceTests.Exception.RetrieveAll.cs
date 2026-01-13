@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Xeptions;
 
 namespace Shenam.Api.Tests.Unit.Services.Foundations.Guests
 {
@@ -39,7 +40,8 @@ namespace Shenam.Api.Tests.Unit.Services.Foundations.Guests
             GuestDependencyException actualException =
                 Assert.Throws<GuestDependencyException>(retrieveAllGuestsAction);
 
-            actualException.Should().BeEquivalentTo(expectedDependencyException);
+            actualException.SameExceptionAs(expectedDependencyException)
+                .Should().BeTrue();
 
             this.storageBrokerMock.Verify(broker =>
                 broker.SelectAllGuests(), Times.Once);

@@ -58,7 +58,12 @@ namespace Shenam.API.Services.Foundations.Guests
                 var failedStorageException =
                     new FailedGuestStorageException(sqlException);
 
-                throw new GuestDependencyException(failedStorageException);
+                var guestDependencyException =
+                    new GuestDependencyException(failedStorageException);
+
+                this.loggingBroker.LogCritical(guestDependencyException);
+
+                throw guestDependencyException;
             }
             catch (Exception exception)
             {
