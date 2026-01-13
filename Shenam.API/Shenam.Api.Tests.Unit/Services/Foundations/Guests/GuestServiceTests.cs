@@ -46,6 +46,15 @@ namespace Shenam.Api.Tests.Unit.Services.Foundations.Guests
         private static SqlException GetSqlError() =>
             (SqlException)FormatterServices.GetUninitializedObject(typeof(SqlException));
 
+        private static IQueryable<Guest> CreateRandomGuests()
+        {
+            int randomCount = GetRandomNumber();
+
+            return Enumerable.Range(0, randomCount)
+                .Select(index => CreateRandomGuest())
+                .AsQueryable();
+        }
+
         private static T GetInvalidEnum<T>()
         {
             int randomNumber = GetRandomNumber();
