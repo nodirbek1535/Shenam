@@ -20,5 +20,7 @@ namespace Shenam.API.Brokers.Storages
         ValueTask<Guest> SelectGuestByIdAsync(Guid guestId);
 
         IQueryable<Guest> SelectAllGuests();
+
+        ValueTask<Guest> UptadeGuestAsync(Guest guest);
     }
 }

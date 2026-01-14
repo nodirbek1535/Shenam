@@ -56,6 +56,22 @@ namespace Shenam.API.Brokers.Storages
                 .FirstOrDefaultAsync(guest => guest.Id == guestId);
         }
 
+        IQueryable<Guest> IStorageBroker.SelectAllGuests()
+        {
+            var broker = new StorageBroker(this.configuration);
+
+            return broker.Guests;
+        }
+
+        async ValueTask<Guest> IStorageBroker.UptadeGuestAsync(Guest guest)
+        {
+            var broker = new StorageBroker(this.configuration);
+            broker.Entry(guest).State = EntityState.Modified;
+            await broker.SaveChangesAsync();
+
+            return guest;
+        }
+
         async ValueTask<HostEntity> IStorageBroker.InsertHostEntityAsync(HostEntity hostEntity)
         {
             var broker = new StorageBroker(this.configuration);

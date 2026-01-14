@@ -37,6 +37,15 @@ namespace Shenam.API.Brokers.Storages
         public IQueryable<Guest> SelectAllGuests() =>
             SelectAll<Guest>();
 
+        public async ValueTask<Guest> UptadeGuestAsync(Guest guest)
+        {
+            using var broker = new StorageBroker(this.configuration);
+
+            broker.Guests.Update(guest);
+            await broker.SaveChangesAsync();
+
+            return guest;
+        }   
 
     }
 }
