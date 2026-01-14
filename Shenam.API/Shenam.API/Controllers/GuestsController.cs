@@ -8,6 +8,7 @@ using Shenam.API.Models.Foundation.Guests;
 using Shenam.API.Models.Foundation.Guests.Exceptions;
 using Shenam.API.Services.Foundations.Guests;
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace Shenam.API.Controllers
@@ -76,5 +77,26 @@ namespace Shenam.API.Controllers
             }
         }
 
+        [HttpGet]
+        public ActionResult<IQueryable<Guest>> GetAllGuests()
+        {
+            try
+            {
+                IQueryable<Guest> guests =
+                    this.guestService.RetrieveAllGuests();
+
+                return Ok(guests);
+            }
+            catch (GuestDependencyException guestDependencyException)
+            {
+                return InternalServerError(
+                    guestDependencyException.InnerException);
+            }
+            catch (GuestServiceException guestServiceException)
+            {
+                return InternalServerError(
+                    guestServiceException.InnerException);
+            }
+        }
     }
 }
