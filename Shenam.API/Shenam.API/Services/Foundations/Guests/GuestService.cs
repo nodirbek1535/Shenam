@@ -79,6 +79,9 @@ namespace Shenam.API.Services.Foundations.Guests
             }
         }
 
-
+        public async ValueTask<Guest> ModifyGuestAsync(Guest guest)
+        {
+            return guest;
+        }
     }
 }
