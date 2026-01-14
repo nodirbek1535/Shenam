@@ -63,7 +63,7 @@ namespace Shenam.API.Brokers.Storages
             return broker.Guests;
         }
 
-        async ValueTask<Guest> IStorageBroker.UptadeGuestAsync(Guest guest)
+        async ValueTask<Guest> IStorageBroker.UpdateGuestAsync(Guest guest)
         {
             var broker = new StorageBroker(this.configuration);
             broker.Entry(guest).State = EntityState.Modified;
