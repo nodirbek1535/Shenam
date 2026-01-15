@@ -81,53 +81,69 @@ namespace Shenam.API.Services.Foundations.Guests
 
         public async ValueTask<Guest> ModifyGuestAsync(Guest guest)
         {
-            if(guest is null)
+            try
             {
-                var nullGuestException = new NullGuestException();
 
-                var guestValidationException =
-                    new GuestValidationException(nullGuestException);
+                if(guest is null)
+                {
+                    var nullGuestException = new NullGuestException();
 
-                this.loggingBroker.LogError(guestValidationException);
+                    var guestValidationException =
+                        new GuestValidationException(nullGuestException);
 
-                throw guestValidationException;
+                    this.loggingBroker.LogError(guestValidationException);
+
+                    throw guestValidationException;
+                }
+                if(guest.Id == Guid.Empty)
+                {
+                    var invalidGuestException = new InvalidGuestException();
+
+                    invalidGuestException.AddData(
+                        key: nameof(Guest.Id),
+                        values: "Id is required");
+
+                    var guestValidationException =
+                        new GuestValidationException(invalidGuestException);
+
+                    this.loggingBroker.LogError(guestValidationException);
+
+                    throw guestValidationException;
+                }
+
+                Guest maybeGuest =
+                    await this.storageBroker.SelectGuestByIdAsync(guest.Id);
+
+                if(maybeGuest is null)
+                {
+                    var notFoundGuestException =
+                        new NotFoundGuestException(guest.Id);
+
+                    var guestValidationException =
+                        new GuestValidationException(notFoundGuestException);
+
+                    this.loggingBroker.LogError(guestValidationException);
+
+                    throw guestValidationException;
+                }
+
+                Guest updatedGuest =
+                    await this.storageBroker.UpdateGuestAsync(guest);
+
+                return updatedGuest;
             }
-            if(guest.Id == Guid.Empty)
+            catch (SqlException sqlException)
             {
-                var invalidGuestException = new InvalidGuestException();
+                var failedStorageException =
+                    new FailedGuestStorageException(sqlException);
 
-                invalidGuestException.AddData(
-                    key: nameof(Guest.Id),
-                    values: "Id is required");
+                var guestDependencyException =
+                    new GuestDependencyException(failedStorageException);
 
-                var guestValidationException =
-                    new GuestValidationException(invalidGuestException);
+                this.loggingBroker.LogCritical(guestDependencyException);
 
-                this.loggingBroker.LogError(guestValidationException);
-
-                throw guestValidationException;
+                throw guestDependencyException;
             }
-
-            Guest maybeGuest =
-                await this.storageBroker.SelectGuestByIdAsync(guest.Id);
-
-            if(maybeGuest is null)
-            {
-                var notFoundGuestException =
-                    new NotFoundGuestException(guest.Id);
-
-                var guestValidationException =
-                    new GuestValidationException(notFoundGuestException);
-
-                this.loggingBroker.LogError(guestValidationException);
-
-                throw guestValidationException;
-            }
-
-            Guest updatedGuest =
-                await this.storageBroker.UpdateGuestAsync(guest);
-
-            return updatedGuest;
         }
     }
 }
