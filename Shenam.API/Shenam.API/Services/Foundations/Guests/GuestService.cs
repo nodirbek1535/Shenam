@@ -124,7 +124,10 @@ namespace Shenam.API.Services.Foundations.Guests
                 throw guestValidationException;
             }
 
-            return guest;
+            Guest updatedGuest =
+                await this.storageBroker.UpdateGuestAsync(guest);
+
+            return updatedGuest;
         }
     }
 }
