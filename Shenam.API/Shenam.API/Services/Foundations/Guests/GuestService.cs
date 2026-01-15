@@ -84,7 +84,7 @@ namespace Shenam.API.Services.Foundations.Guests
             try
             {
 
-                if(guest is null)
+                if (guest is null)
                 {
                     var nullGuestException = new NullGuestException();
 
@@ -95,7 +95,7 @@ namespace Shenam.API.Services.Foundations.Guests
 
                     throw guestValidationException;
                 }
-                if(guest.Id == Guid.Empty)
+                if (guest.Id == Guid.Empty)
                 {
                     var invalidGuestException = new InvalidGuestException();
 
@@ -114,7 +114,7 @@ namespace Shenam.API.Services.Foundations.Guests
                 Guest maybeGuest =
                     await this.storageBroker.SelectGuestByIdAsync(guest.Id);
 
-                if(maybeGuest is null)
+                if (maybeGuest is null)
                 {
                     var notFoundGuestException =
                         new NotFoundGuestException(guest.Id);
@@ -142,6 +142,14 @@ namespace Shenam.API.Services.Foundations.Guests
 
                 this.loggingBroker.LogCritical(guestDependencyException);
 
+                throw guestDependencyException;
+            }
+            catch (LockedGuestException lockedGuestException)
+            {
+                var guestDependencyException =
+                    new GuestDependencyException(lockedGuestException);
+
+                this.loggingBroker.LogError(guestDependencyException);
                 throw guestDependencyException;
             }
         }

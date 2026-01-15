@@ -49,6 +49,14 @@ namespace Shenam.API.Services.Foundations.Guests
                 this.loggingBroker.LogError(guestValidationException);
                 throw guestValidationException;
             }
+            catch(LockedGuestException lockedGuestException)
+            {
+                var guestDependencyValidationException =
+                    new GuestDependencyValidationException(lockedGuestException);
+
+                this.loggingBroker.LogError(guestDependencyValidationException);
+                throw guestDependencyValidationException;
+            }
             catch (Exception exception)
             {
                 var failedGuestServiceException =
