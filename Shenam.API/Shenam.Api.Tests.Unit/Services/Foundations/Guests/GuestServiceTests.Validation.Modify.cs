@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Xeptions;
 
 namespace Shenam.Api.Tests.Unit.Services.Foundations.Guests
 {
@@ -35,8 +36,9 @@ namespace Shenam.Api.Tests.Unit.Services.Foundations.Guests
                     modifyGuestTask.AsTask);
 
             // then
-            actualGuestValidationException.Should().BeEquivalentTo(
-                expectedGuestValidationException);
+            actualGuestValidationException
+                .SameExceptionAs(expectedGuestValidationException)
+                .Should().BeTrue();
 
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogError(It.Is(SameExceptionAs(

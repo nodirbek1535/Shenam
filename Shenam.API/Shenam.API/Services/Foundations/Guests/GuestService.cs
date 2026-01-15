@@ -81,6 +81,18 @@ namespace Shenam.API.Services.Foundations.Guests
 
         public async ValueTask<Guest> ModifyGuestAsync(Guest guest)
         {
+            if(guest is null)
+            {
+                var nullGuestException = new NullGuestException();
+
+                var guestValidationException =
+                    new GuestValidationException(nullGuestException);
+
+                this.loggingBroker.LogError(guestValidationException);
+
+                throw guestValidationException;
+            }
+
             return guest;
         }
     }
