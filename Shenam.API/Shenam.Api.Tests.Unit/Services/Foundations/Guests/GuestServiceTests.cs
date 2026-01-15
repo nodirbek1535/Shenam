@@ -32,9 +32,9 @@ namespace Shenam.Api.Tests.Unit.Services.Foundations.Guests
         }
 
         private static Guest CreateRandomGuest() =>
-            CreateGuestFiller(date: GetRandomDateTimeoffset()).Create();
+            CreateGuestFiller(date: GetRandomDateTimeOffset()).Create();
 
-        private static DateTimeOffset GetRandomDateTimeoffset() =>
+        private static DateTimeOffset GetRandomDateTimeOffset() =>
             new DateTimeRange(earliestDate: new DateTime()).GetValue();
 
         private static int GetRandomNumber() =>
