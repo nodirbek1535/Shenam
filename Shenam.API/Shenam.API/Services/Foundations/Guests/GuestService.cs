@@ -108,6 +108,22 @@ namespace Shenam.API.Services.Foundations.Guests
                 throw guestValidationException;
             }
 
+            Guest maybeGuest =
+                await this.storageBroker.SelectGuestByIdAsync(guest.Id);
+
+            if(maybeGuest is null)
+            {
+                var notFoundGuestException =
+                    new NotFoundGuestException(guest.Id);
+
+                var guestValidationException =
+                    new GuestValidationException(notFoundGuestException);
+
+                this.loggingBroker.LogError(guestValidationException);
+
+                throw guestValidationException;
+            }
+
             return guest;
         }
     }
