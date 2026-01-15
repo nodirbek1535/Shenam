@@ -92,6 +92,21 @@ namespace Shenam.API.Services.Foundations.Guests
 
                 throw guestValidationException;
             }
+            if(guest.Id == Guid.Empty)
+            {
+                var invalidGuestException = new InvalidGuestException();
+
+                invalidGuestException.AddData(
+                    key: nameof(Guest.Id),
+                    values: "Id is required");
+
+                var guestValidationException =
+                    new GuestValidationException(invalidGuestException);
+
+                this.loggingBroker.LogError(guestValidationException);
+
+                throw guestValidationException;
+            }
 
             return guest;
         }
