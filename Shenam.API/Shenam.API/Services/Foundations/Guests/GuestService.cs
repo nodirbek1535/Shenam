@@ -157,18 +157,18 @@ namespace Shenam.API.Services.Foundations.Guests
 
                 throw guestDependencyValidationException;
             }
-            //catch (DbUpdateException dbUpdateException)
-            //{
-            //    var failedGuestStorageException =
-            //        new FailedGuestStorageException(dbUpdateException);
+            catch (DbUpdateException dbUpdateException)
+            {
+                var failedGuestStorageException =
+                    new FailedGuestStorageException(dbUpdateException);
 
-            //    var guestDependencyException =
-            //        new GuestDependencyException(failedGuestStorageException);
+                var guestDependencyException =
+                    new GuestDependencyException(failedGuestStorageException);
 
-            //    this.loggingBroker.LogError(guestDependencyException);
+                this.loggingBroker.LogError(guestDependencyException);
 
-            //    throw guestDependencyException;
-            //}
+                throw guestDependencyException;
+            }
         }
     }
 }
