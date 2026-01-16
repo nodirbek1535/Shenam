@@ -2,12 +2,13 @@
 //NODIRBEKNING MOHIRDEV PLATFORMASIDA ORGANGAN API SINOV LOYIHASI
 //===============================================================
 
-using System;
-using System.Threading.Tasks;
 using EFxceptions.Models.Exceptions;
 using Microsoft.Data.SqlClient;
+using Microsoft.EntityFrameworkCore;
 using Shenam.API.Models.Foundation.Guests;
 using Shenam.API.Models.Foundation.Guests.Exceptions;
+using System;
+using System.Threading.Tasks;
 using Xeptions;
 
 namespace Shenam.API.Services.Foundations.Guests
@@ -16,11 +17,11 @@ namespace Shenam.API.Services.Foundations.Guests
     {
         private delegate ValueTask<Guest> ReturnningGuestFunction();
 
-        private async ValueTask<Guest> TryCatch(ReturnningGuestFunction returnningGuestFunction)
+        private async ValueTask<Guest> TryCatch(ReturnningGuestFunction returningGuestFunction)
         {
             try
             {
-                return await returnningGuestFunction();
+                return await returningGuestFunction();
             }
             catch (NullGuestException nullGuestException)
             {
@@ -30,42 +31,46 @@ namespace Shenam.API.Services.Foundations.Guests
             {
                 throw CreateAndLogValidationException(invalidGuestException);
             }
+            catch (NotFoundGuestException notFoundGuestException)
+            {
+                throw CreateAndLogValidationException(notFoundGuestException);
+            }
             catch (SqlException sqlException)
             {
-                var failedGuestStorageException = new FailedGuestStorageException(sqlException);
+                var failedGuestStorageException =
+                    new FailedGuestStorageException(sqlException);
+
                 throw CreateAndLogCriticalDependencyException(failedGuestStorageException);
+            }
+            catch (DbUpdateConcurrencyException dbUpdateConcurrencyException)
+            {
+                var lockedGuestException =
+                    new LockedGuestException(dbUpdateConcurrencyException);
+
+                throw CreateAndLogDependencyValidationException(lockedGuestException);
+            }
+            catch (DbUpdateException dbUpdateException)
+            {
+                var failedGuestStorageException =
+                    new FailedGuestStorageException(dbUpdateException);
+
+                throw CreateAndLogDependencyException(failedGuestStorageException);
             }
             catch (DuplicateKeyException duplicateKeyException)
             {
                 var alreadyExistsGuestException =
                     new AlreadyExistsGuestException(duplicateKeyException);
+
                 throw CreateAndLogDependencyValidationException(alreadyExistsGuestException);
-            }
-            catch (NotFoundGuestException notFoundGuestException)
-            {
-                var guestValidationException =
-                    new GuestValidationException(notFoundGuestException);
-
-                this.loggingBroker.LogError(guestValidationException);
-                throw guestValidationException;
-            }
-            catch(LockedGuestException lockedGuestException)
-            {
-                var guestDependencyValidationException =
-                    new GuestDependencyValidationException(lockedGuestException);
-
-                this.loggingBroker.LogError(guestDependencyValidationException);
-                throw guestDependencyValidationException;
             }
             catch (Exception exception)
             {
                 var failedGuestServiceException =
                     new FailedGuestServiceException(exception);
+
                 throw CreateAndLogServiceException(failedGuestServiceException);
             }
         }
-
-
 
         private GuestValidationException CreateAndLogValidationException(Xeption exception)
         {
@@ -104,6 +109,16 @@ namespace Shenam.API.Services.Foundations.Guests
             this.loggingBroker.LogError(guestServiceException);
 
             return guestServiceException;
+        }
+
+        private GuestDependencyException CreateAndLogDependencyException(Xeption exception)
+        {
+            var guestDependencyException =
+                new GuestDependencyException(exception);
+
+            this.loggingBroker.LogError(guestDependencyException);
+
+            return guestDependencyException;
         }
     }
 }

@@ -80,107 +80,17 @@ namespace Shenam.API.Services.Foundations.Guests
             }
         }
 
-        public async ValueTask<Guest> ModifyGuestAsync(Guest guest)
+        public ValueTask<Guest> ModifyGuestAsync(Guest guest) =>
+        TryCatch(async () =>
         {
-            try
-            {
+            ValidateGuestOnModify(guest);
 
-                if (guest is null)
-                {
-                    var nullGuestException = new NullGuestException();
+            Guest maybeGuest =
+                await this.storageBroker.SelectGuestByIdAsync(guest.Id);
 
-                    var guestValidationException =
-                        new GuestValidationException(nullGuestException);
+            ValidateStorageGuest(maybeGuest, guest.Id);
 
-                    this.loggingBroker.LogError(guestValidationException);
-
-                    throw guestValidationException;
-                }
-                if (guest.Id == Guid.Empty)
-                {
-                    var invalidGuestException = new InvalidGuestException();
-
-                    invalidGuestException.AddData(
-                        key: nameof(Guest.Id),
-                        values: "Id is required");
-
-                    var guestValidationException =
-                        new GuestValidationException(invalidGuestException);
-
-                    this.loggingBroker.LogError(guestValidationException);
-
-                    throw guestValidationException;
-                }
-
-                Guest maybeGuest =
-                    await this.storageBroker.SelectGuestByIdAsync(guest.Id);
-
-                if (maybeGuest is null)
-                {
-                    var notFoundGuestException =
-                        new NotFoundGuestException(guest.Id);
-
-                    var guestValidationException =
-                        new GuestValidationException(notFoundGuestException);
-
-                    this.loggingBroker.LogError(guestValidationException);
-
-                    throw guestValidationException;
-                }
-
-                Guest updatedGuest =
-                    await this.storageBroker.UpdateGuestAsync(guest);
-
-                return updatedGuest;
-            }
-            catch (SqlException sqlException)
-            {
-                var failedStorageException =
-                    new FailedGuestStorageException(sqlException);
-
-                var guestDependencyException =
-                    new GuestDependencyException(failedStorageException);
-
-                this.loggingBroker.LogCritical(guestDependencyException);
-
-                throw guestDependencyException;
-            }
-            catch (DbUpdateConcurrencyException dbUpdateConcurrencyException)
-            {
-                var lockedGuestException =
-                    new LockedGuestException(dbUpdateConcurrencyException);
-
-                var guestDependencyValidationException
-                    = new GuestDependencyValidationException(lockedGuestException); 
-
-                this.loggingBroker.LogError(guestDependencyValidationException);
-
-                throw guestDependencyValidationException;
-            }
-            catch (DbUpdateException dbUpdateException)
-            {
-                var failedGuestStorageException =
-                    new FailedGuestStorageException(dbUpdateException);
-
-                var guestDependencyException =
-                    new GuestDependencyException(failedGuestStorageException);
-
-                this.loggingBroker.LogError(guestDependencyException);
-
-                throw guestDependencyException;
-            }
-            catch (Exception exception)
-            {
-                var failedGuestServiceException =
-                    new FailedGuestServiceException(exception);
-
-                var guestServiceException =
-                    new GuestServiceException(failedGuestServiceException);
-
-                this.loggingBroker.LogError(guestServiceException);
-
-                throw guestServiceException;
-            }
-        }
+            return await this.storageBroker.UpdateGuestAsync(guest);
+        });
     }
 }
