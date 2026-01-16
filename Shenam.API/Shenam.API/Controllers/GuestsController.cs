@@ -98,5 +98,39 @@ namespace Shenam.API.Controllers
                     guestServiceException.InnerException);
             }
         }
+
+        [HttpPut]
+        public async ValueTask<ActionResult<Guest>> PutGuestAsync(Guest guest)
+        {
+            try
+            {
+                Guest modifiedGuest =
+                    await this.guestService.ModifyGuestAsync(guest);
+
+                return Ok(modifiedGuest);
+            }
+            catch (GuestValidationException guestValidationException)
+            {
+                return BadRequest(guestValidationException.InnerException);
+            }
+            catch (GuestDependencyValidationException guestDependencyValidationException)
+                when (guestDependencyValidationException.InnerException is LockedGuestException)
+            {
+                return Locked(guestDependencyValidationException.InnerException);
+            }
+            catch (GuestDependencyValidationException guestDependencyValidationException)
+            {
+                return BadRequest(guestDependencyValidationException.InnerException);
+            }
+            catch (GuestDependencyException guestDependencyException)
+            {
+                return InternalServerError(guestDependencyException.InnerException);
+            }
+            catch (GuestServiceException guestServiceException)
+            {
+                return InternalServerError(guestServiceException.InnerException);
+            }
+        }
+
     }
 }
