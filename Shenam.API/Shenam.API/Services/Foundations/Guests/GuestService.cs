@@ -3,6 +3,7 @@
 //===============================================================
 
 using Microsoft.Data.SqlClient;
+using Microsoft.EntityFrameworkCore;
 using Shenam.API.Brokers.loggings;
 using Shenam.API.Brokers.Storages;
 using Shenam.API.Models.Foundation.Guests;
@@ -144,13 +145,17 @@ namespace Shenam.API.Services.Foundations.Guests
 
                 throw guestDependencyException;
             }
-            catch (LockedGuestException lockedGuestException)
+            catch (DbUpdateConcurrencyException dbUpdateConcurrencyException)
             {
-                var guestDependencyException =
-                    new GuestDependencyException(lockedGuestException);
+                var lockedGuestException =
+                    new LockedGuestException(dbUpdateConcurrencyException);
 
-                this.loggingBroker.LogError(guestDependencyException);
-                throw guestDependencyException;
+                var guestDependencyValidationException
+                    = new GuestDependencyValidationException(lockedGuestException); 
+
+                this.loggingBroker.LogError(guestDependencyValidationException);
+
+                throw guestDependencyValidationException;
             }
         }
     }
