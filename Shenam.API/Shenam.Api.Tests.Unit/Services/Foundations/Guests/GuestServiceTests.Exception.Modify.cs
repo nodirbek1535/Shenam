@@ -12,6 +12,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Xeptions;
 
 namespace Shenam.Api.Tests.Unit.Services.Foundations.Guests
 {
@@ -95,5 +96,44 @@ namespace Shenam.Api.Tests.Unit.Services.Foundations.Guests
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }
 
+        [Fact]
+        public async Task ShouldThrowDependencyExceptionOnModifyIfDbUpdateErrorOccursAndLogItAsync()
+        {
+            // given
+            Guest someGuest = CreateRandomGuest();
+            Guid guestId = someGuest.Id;
+            var dbUpdateException = new DbUpdateException();
+
+            var failedGuestStorageException =
+                new FailedGuestStorageException(
+                    new Xeption(message: "Failed guest storage error occurred", dbUpdateException));
+
+            var expectedGuestDependencyException =
+                new GuestDependencyException(failedGuestStorageException);
+
+            this.storageBrokerMock.Setup(broker =>
+                broker.SelectGuestByIdAsync(guestId))
+                    .ThrowsAsync(dbUpdateException);
+
+            // when
+            ValueTask<Guest> modifyGuestTask =
+                this.guestService.ModifyGuestAsync(someGuest);
+
+            // then
+            await Assert.ThrowsAsync<GuestDependencyException>(() =>
+                modifyGuestTask.AsTask());
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.SelectGuestByIdAsync(guestId),
+                    Times.Once);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(
+                    It.Is(SameExceptionAs(expectedGuestDependencyException))),
+                Times.Once);
+
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+        }
     }
 }
