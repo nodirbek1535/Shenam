@@ -3,6 +3,7 @@
 //===============================================================
 
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 using Shenam.API.Models.Foundation.Guests;
 
@@ -17,5 +18,9 @@ namespace Shenam.API.Brokers.Storages
         ValueTask<Guest> InsertGuestAsync(Guest guest);
 
         ValueTask<Guest> SelectGuestByIdAsync(Guid guestId);
+
+        IQueryable<Guest> SelectAllGuests();
+
+        ValueTask<Guest> UpdateGuestAsync(Guest guest);
     }
 }

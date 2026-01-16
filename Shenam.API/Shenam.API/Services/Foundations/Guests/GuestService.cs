@@ -2,11 +2,15 @@
 //NODIRBEKNING MOHIRDEV PLATFORMASIDA ORGANGAN API SINOV LOYIHASI
 //===============================================================
 
-using System;
-using System.Threading.Tasks;
+using Microsoft.Data.SqlClient;
+using Microsoft.EntityFrameworkCore;
 using Shenam.API.Brokers.loggings;
 using Shenam.API.Brokers.Storages;
 using Shenam.API.Models.Foundation.Guests;
+using Shenam.API.Models.Foundation.Guests.Exceptions;
+using System;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace Shenam.API.Services.Foundations.Guests
 {
@@ -44,5 +48,49 @@ namespace Shenam.API.Services.Foundations.Guests
             return maybeGuest;
         });
 
+        public IQueryable<Guest> RetrieveAllGuests()
+        {
+            try
+            {
+                return this.storageBroker.SelectAllGuests();
+            }
+            catch (SqlException sqlException)
+            {
+                var failedStorageException =
+                    new FailedGuestStorageException(sqlException);
+
+                var guestDependencyException =
+                    new GuestDependencyException(failedStorageException);
+
+                this.loggingBroker.LogCritical(guestDependencyException);
+
+                throw guestDependencyException;
+            }
+            catch (Exception exception)
+            {
+                var failedServiceException =
+                    new FailedGuestServiceException(exception);
+
+                var guestServiceException =
+                    new GuestServiceException(failedServiceException);
+
+                this.loggingBroker.LogError(guestServiceException); 
+
+                throw new GuestServiceException(failedServiceException);
+            }
+        }
+
+        public ValueTask<Guest> ModifyGuestAsync(Guest guest) =>
+        TryCatch(async () =>
+        {
+            ValidateGuestOnModify(guest);
+
+            Guest maybeGuest =
+                await this.storageBroker.SelectGuestByIdAsync(guest.Id);
+
+            ValidateStorageGuest(maybeGuest, guest.Id);
+
+            return await this.storageBroker.UpdateGuestAsync(guest);
+        });
     }
 }

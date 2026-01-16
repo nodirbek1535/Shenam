@@ -3,6 +3,7 @@
 //===============================================================
 
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 using EFxceptions;
 using Microsoft.EntityFrameworkCore;
@@ -23,6 +24,10 @@ namespace Shenam.API.Brokers.Storages
             this.configuration = configuration;
             this.Database.Migrate();
         }
+
+        protected IQueryable<T> SelectAll<T>() where T : class =>
+            this.Set<T>();
+
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             string connectionString =
@@ -49,6 +54,22 @@ namespace Shenam.API.Brokers.Storages
            
             return await broker.Guests
                 .FirstOrDefaultAsync(guest => guest.Id == guestId);
+        }
+
+        IQueryable<Guest> IStorageBroker.SelectAllGuests()
+        {
+            var broker = new StorageBroker(this.configuration);
+
+            return broker.Guests;
+        }
+
+        async ValueTask<Guest> IStorageBroker.UpdateGuestAsync(Guest guest)
+        {
+            var broker = new StorageBroker(this.configuration);
+            broker.Entry(guest).State = EntityState.Modified;
+            await broker.SaveChangesAsync();
+
+            return guest;
         }
 
         async ValueTask<HostEntity> IStorageBroker.InsertHostEntityAsync(HostEntity hostEntity)
