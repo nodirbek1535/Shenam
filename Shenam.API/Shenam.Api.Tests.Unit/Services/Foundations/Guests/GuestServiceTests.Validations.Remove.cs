@@ -16,6 +16,43 @@ namespace Shenam.Api.Tests.Unit.Services.Foundations.Guests
     public partial class GuestServiceTests
     {
         [Fact]
+        public async Task ShouldThrowValidationExceptionOnRemoveIfGuestIdIsInvalidAndLogItAsync()
+        {
+            // given
+            Guid invalidGuestId = Guid.Empty;
+
+            var invalidGuestException =
+                new InvalidGuestException();
+
+            invalidGuestException.AddData(
+                key: nameof(Guest.Id),
+                values: "Id is required");
+
+            var expectedGuestValidationException =
+                new GuestValidationException(invalidGuestException);
+
+            // when
+            ValueTask<Guest> removeGuestTask =
+                this.guestService.RemoveGuestByIdAsync(invalidGuestId);
+
+            // then
+            await Assert.ThrowsAsync<GuestValidationException>(
+                () => removeGuestTask.AsTask());
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedGuestValidationException))),
+                Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.SelectGuestByIdAsync(It.IsAny<Guid>()),
+                Times.Never);
+
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
         public async Task ShouldThrowValidationExceptionOnRemoveIfGuestDoesNotExistAndLogItAsync()
         {
             // given
@@ -53,6 +90,5 @@ namespace Shenam.Api.Tests.Unit.Services.Foundations.Guests
             this.storageBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }
-
     }
 }
