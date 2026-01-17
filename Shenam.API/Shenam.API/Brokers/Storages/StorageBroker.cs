@@ -72,6 +72,14 @@ namespace Shenam.API.Brokers.Storages
             return guest;
         }
 
+        async ValueTask<Guest> IStorageBroker.DeleteGuestAsync(Guest guest)
+        {
+            var broker = new StorageBroker(this.configuration);
+            broker.Entry(guest).State = EntityState.Deleted;
+            await broker.SaveChangesAsync();
+            return guest;
+        }
+
         async ValueTask<HostEntity> IStorageBroker.InsertHostEntityAsync(HostEntity hostEntity)
         {
             var broker = new StorageBroker(this.configuration);
@@ -79,7 +87,7 @@ namespace Shenam.API.Brokers.Storages
             await broker.SaveChangesAsync();
 
             return hostEntity;
-         }
+        }
          
         async ValueTask<Home> IStorageBroker.InsertHomeAsync(Home home)
         {

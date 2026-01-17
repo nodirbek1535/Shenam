@@ -15,5 +15,6 @@ namespace Shenam.API.Services.Foundations.Guests
         ValueTask<Guest> RetrieveGuestByIdAsync(Guid invalidGuestId);
         IQueryable<Guest> RetrieveAllGuests();
         ValueTask<Guest> ModifyGuestAsync(Guest guest);
+        ValueTask<Guest> RemoveGuestByIdAsync(Guid guestId);
     }
 }
