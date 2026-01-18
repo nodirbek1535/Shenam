@@ -4,9 +4,11 @@
 
 using EFxceptions.Models.Exceptions;
 using Microsoft.Data.SqlClient;
+using Microsoft.EntityFrameworkCore;
 using Shenam.API.Models.Foundation.Homes;
 using Shenam.API.Models.Foundation.Homes.Exceptions;
 using System;
+using System.Data;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
 using Xeptions;

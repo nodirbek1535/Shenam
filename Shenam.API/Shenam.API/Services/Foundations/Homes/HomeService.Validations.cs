@@ -23,9 +23,8 @@ namespace Shenam.API.Services.Foundations.Homes
                 (Rule: IsInvalid(home.Area), Parameter: nameof(Home.Area)),
                 (Rule: IsInvalid(home.Price), Parameter: nameof(Home.Price)),
                 (Rule: IsInvalid(home.HomeType), Parameter: nameof(Home.HomeType))
-                    );
+            );
         }
-
         private void ValidateHomeNotNull(Home home)
         {
             if (home is null)

@@ -77,8 +77,13 @@ namespace Shenam.API.Services.Foundations.Homes
 
                 this.loggingBroker.LogError(homeServiceException);
 
-                throw new HomeServiceException(failedHomeServiceException);
+                throw homeServiceException;
             }
+        }
+        
+        public async ValueTask<Home> ModifyHomeAsync(Home home)
+        {
+            return home;
         }
     }
 }
