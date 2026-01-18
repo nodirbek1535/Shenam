@@ -34,6 +34,19 @@ namespace Shenam.API.Services.Foundations.Homes
             }
         }
 
+        private void ValidateHomeId(Guid homeId)
+        {
+            Validate(
+                (Rule: IsInvalid(homeId), Parameter: nameof(Home.Id)));
+        }
+
+        private void ValidateStorageHome(Home maybeHome, Guid homeId)
+        {
+            if (maybeHome is null)
+            {
+                throw new NotFoundHomeException(homeId);
+            }
+        }
         private static dynamic IsInvalid(Guid id) => new
         {
             Condition = id == Guid.Empty,
