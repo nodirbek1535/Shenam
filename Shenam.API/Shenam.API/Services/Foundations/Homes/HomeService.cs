@@ -2,6 +2,7 @@
 //NODIRBEKNING MOHIRDEV PLATFORMASIDA ORGANGAN API SINOV LOYIHASI
 //===============================================================
 
+using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore.ChangeTracking.Internal;
 using Shenam.API.Brokers.loggings;
 using Shenam.API.Brokers.Storages;
@@ -9,11 +10,12 @@ using Shenam.API.Models.Foundation.Guests;
 using Shenam.API.Models.Foundation.Homes;
 using Shenam.API.Models.Foundation.Homes.Exceptions;
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace Shenam.API.Services.Foundations.Homes
 {
-    public partial class HomeService:IHomeService
+    public partial class HomeService : IHomeService
     {
         private readonly IStorageBroker storageBroker;
         private readonly ILoggingBroker loggingBroker;
@@ -26,9 +28,9 @@ namespace Shenam.API.Services.Foundations.Homes
             this.loggingBroker = loggingBroker;
         }
 
-        public  ValueTask<Home> AddHomeAsync(Home home) =>
+        public ValueTask<Home> AddHomeAsync(Home home) =>
         TryCatch(async () =>
-        { 
+        {
             ValidateHomeOnAdd(home);
 
             return await this.storageBroker.InsertHomeAsync(home);
@@ -39,12 +41,34 @@ namespace Shenam.API.Services.Foundations.Homes
         {
             ValidateHomeId(homeId);
 
-            Home maybeHome = 
+            Home maybeHome =
                 await this.storageBroker.SelectHomeByIdAsync(homeId);
 
             ValidateStorageHome(maybeHome, homeId);
 
             return maybeHome;
         });
+
+        public IQueryable<Home> RetrieveAllHomes()
+        {
+            try
+            {
+                return this.storageBroker.SelectAllHomes();
+            }
+            catch (SqlException sqlException)
+            {
+                var failedHomeStorageException =
+                    new FailedHomeStorageException(sqlException);
+
+                throw new HomeDependencyException(failedHomeStorageException);
+            }
+            catch (Exception exception)
+            {
+                var failedHomeServiceException =
+                    new FailedHomeServiceException(exception);  
+
+                throw new HomeServiceException(failedHomeServiceException);
+            }
+        }
     }
 }
