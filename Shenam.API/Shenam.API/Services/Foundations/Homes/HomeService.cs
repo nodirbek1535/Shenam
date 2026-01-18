@@ -60,7 +60,12 @@ namespace Shenam.API.Services.Foundations.Homes
                 var failedHomeStorageException =
                     new FailedHomeStorageException(sqlException);
 
-                throw new HomeDependencyException(failedHomeStorageException);
+                var homeDependencyException =
+                    new HomeDependencyException(failedHomeStorageException);
+
+                this.loggingBroker.LogCritical(homeDependencyException);
+
+                throw homeDependencyException;
             }
             catch (Exception exception)
             {
