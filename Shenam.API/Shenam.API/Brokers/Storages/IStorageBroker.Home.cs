@@ -20,5 +20,7 @@ namespace Shenam.API.Brokers.Storages
         ValueTask<Home> SelectHomeByIdAsync(Guid homeId);
 
         IQueryable<Home> SelectAllHomes();
+
+        ValueTask<Home> UpdateHomeAsync(Home home);
     }
 }
