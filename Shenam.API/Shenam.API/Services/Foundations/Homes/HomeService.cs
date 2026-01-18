@@ -72,6 +72,11 @@ namespace Shenam.API.Services.Foundations.Homes
                 var failedHomeServiceException =
                     new FailedHomeServiceException(exception);  
 
+                var homeServiceException =
+                    new HomeServiceException(failedHomeServiceException);
+
+                this.loggingBroker.LogError(homeServiceException);
+
                 throw new HomeServiceException(failedHomeServiceException);
             }
         }
