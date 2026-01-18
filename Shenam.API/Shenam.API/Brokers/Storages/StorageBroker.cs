@@ -89,6 +89,7 @@ namespace Shenam.API.Brokers.Storages
             return hostEntity;
         }
          
+        //HOMES
         async ValueTask<Home> IStorageBroker.InsertHomeAsync(Home home)
         {
             var broker = new StorageBroker(this.configuration);
@@ -96,6 +97,14 @@ namespace Shenam.API.Brokers.Storages
             await broker.SaveChangesAsync();
 
             return home;
+        }
+
+        async ValueTask<Home> IStorageBroker.SelectHomeByIdAsync(Guid homeId)
+        {
+            var broker = new StorageBroker(this.configuration);
+
+            return await broker.Homes
+                .FirstOrDefaultAsync(home => home.Id == homeId);
         }
 
         async ValueTask<HomeRequest> IStorageBroker.InsertHomeRequestAsync(HomeRequest homeRequest)
