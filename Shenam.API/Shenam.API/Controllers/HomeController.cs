@@ -7,6 +7,7 @@ using RESTFulSense.Controllers;
 using Shenam.API.Models.Foundation.Homes;
 using Shenam.API.Models.Foundation.Homes.Exceptions;
 using Shenam.API.Services.Foundations.Homes;
+using System;
 using System.Threading.Tasks;
 
 namespace Shenam.API.Controllers
@@ -39,6 +40,30 @@ namespace Shenam.API.Controllers
                 when (homeDependencyValidationException.InnerException is AlreadyExistsHomeException)
             {
                 return Conflict(homeDependencyValidationException.InnerException);
+            }
+            catch (HomeDependencyException homeDependencyException)
+            {
+                return InternalServerError(homeDependencyException.InnerException);
+            }
+            catch (HomeServiceException homeServiceException)
+            {
+                return InternalServerError(homeServiceException.InnerException);
+            }
+        }
+
+        [HttpGet("{homeId}")]
+        public async ValueTask<ActionResult<Home>> GetHomeByIdAsync(Guid homeId)
+        {
+            try
+            {
+                Home home =
+                    await this.homeService.RetrieveHomeByIdAsync(homeId);
+
+                return Ok(home);
+            }
+            catch (HomeValidationException homeValidationException)
+            {
+                return BadRequest(homeValidationException.InnerException);
             }
             catch (HomeDependencyException homeDependencyException)
             {

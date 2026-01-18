@@ -2,6 +2,7 @@
 //NODIRBEKNING MOHIRDEV PLATFORMASIDA ORGANGAN API SINOV LOYIHASI
 //===============================================================
 
+using System;
 using System.Threading.Tasks;
 using Shenam.API.Models.Foundation.Homes;
 
@@ -14,5 +15,7 @@ namespace Shenam.API.Brokers.Storages
         //UPDATE
         //DELETE
         ValueTask<Home> InsertHomeAsync(Home home);
+
+        ValueTask<Home> SelectHomeByIdAsync(Guid homeId);
     }
 }

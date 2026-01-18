@@ -34,5 +34,17 @@ namespace Shenam.API.Services.Foundations.Homes
             return await this.storageBroker.InsertHomeAsync(home);
         });
 
+        public ValueTask<Home> RetrieveHomeByIdAsync(Guid homeId) =>
+        TryCatch(async () =>
+        {
+            ValidateHomeId(homeId);
+
+            Home maybeHome = 
+                await this.storageBroker.SelectHomeByIdAsync(homeId);
+
+            ValidateStorageHome(maybeHome, homeId);
+
+            return maybeHome;
+        });
     }
 }
