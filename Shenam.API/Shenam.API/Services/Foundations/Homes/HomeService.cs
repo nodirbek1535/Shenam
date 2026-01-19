@@ -83,6 +83,18 @@ namespace Shenam.API.Services.Foundations.Homes
         
         public async ValueTask<Home> ModifyHomeAsync(Home home)
         {
+            if(home is null)
+            {
+                var nullHomeException = new NullHomeException();
+
+                var homeValidationException =
+                    new HomeValidationException(nullHomeException);
+
+                this.loggingBroker.LogError(homeValidationException);
+
+                throw homeValidationException;
+            }
+
             return home;
         }
     }
