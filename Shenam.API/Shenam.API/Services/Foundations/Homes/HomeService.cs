@@ -110,6 +110,22 @@ namespace Shenam.API.Services.Foundations.Homes
                 throw homeValidationException;
             }
 
+            Home maybeHome =
+                await this.storageBroker.SelectHomeByIdAsync(home.Id);
+
+            if(maybeHome is null)
+            {
+                var notFoundHomeException =
+                    new NotFoundHomeException(home.Id);
+
+                var homeValidationException =
+                    new HomeValidationException(notFoundHomeException);
+
+                this.loggingBroker.LogError(homeValidationException);
+
+                throw homeValidationException;
+            }
+
             return home;
         }
     }
