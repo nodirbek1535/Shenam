@@ -126,7 +126,10 @@ namespace Shenam.API.Services.Foundations.Homes
                 throw homeValidationException;
             }
 
-            return home;
+            Home updateHome =
+                await this.storageBroker.UpdateHomeAsync(home);
+
+            return updateHome;
         }
     }
 }
