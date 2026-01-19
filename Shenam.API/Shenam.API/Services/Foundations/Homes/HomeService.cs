@@ -94,6 +94,21 @@ namespace Shenam.API.Services.Foundations.Homes
 
                 throw homeValidationException;
             }
+            if(home.Id == Guid.Empty)
+            {
+                var invalidHomeException = new InvalidHomeException();
+
+                invalidHomeException.AddData(
+                    key: nameof(Home.Id),
+                    values: "Id is required");
+
+                var homeValidationException =
+                    new HomeValidationException(invalidHomeException);
+
+                this.loggingBroker.LogError(homeValidationException);
+
+                throw homeValidationException;
+            }
 
             return home;
         }
