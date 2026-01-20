@@ -98,5 +98,38 @@ namespace Shenam.API.Controllers
                     guestServiceException.InnerException);
             }
         }
+
+        [HttpPut]
+        public async ValueTask<ActionResult<Home>> PutHomeAsync(Home home)
+        {
+            try
+            {
+                Home modifiedHome =
+                    await this.homeService.ModifyHomeAsync(home);
+
+                return Ok(modifiedHome);
+            }
+            catch (HomeValidationException homeValidationException)
+            {
+                return BadRequest(homeValidationException.InnerException);
+            }
+            catch (HomeDependencyValidationException homeDependencyValidationException)
+                when (homeDependencyValidationException.InnerException is LockedHomeException)
+            {
+                return Locked(homeDependencyValidationException.InnerException);
+            }
+            catch (HomeDependencyValidationException homeDependencyValidationException)
+            {
+                return BadRequest(homeDependencyValidationException.InnerException);
+            }
+            catch (HomeDependencyException homeDependencyException)
+            {
+                return InternalServerError(homeDependencyException.InnerException);
+            }
+            catch (HomeServiceException homeServiceException)
+            {
+                return InternalServerError(homeServiceException.InnerException);
+            }
+        }
     }
 }

@@ -3,6 +3,7 @@
 //===============================================================
 
 using Microsoft.Data.SqlClient;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking.Internal;
 using Shenam.API.Brokers.loggings;
 using Shenam.API.Brokers.Storages;
@@ -77,8 +78,21 @@ namespace Shenam.API.Services.Foundations.Homes
 
                 this.loggingBroker.LogError(homeServiceException);
 
-                throw new HomeServiceException(failedHomeServiceException);
+                throw homeServiceException;
             }
         }
+
+        public ValueTask<Home> ModifyHomeAsync(Home home) =>
+        TryCatch(async () =>
+        {
+            ValidateHomeOnModify(home);
+
+            Home maybeHome =
+                await this.storageBroker.SelectHomeByIdAsync(home.Id);
+
+            ValidateStorageHome(maybeHome, home.Id);
+
+            return await this.storageBroker.UpdateHomeAsync(home);
+        });
     }
 }
