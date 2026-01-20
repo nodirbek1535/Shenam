@@ -154,6 +154,18 @@ namespace Shenam.API.Services.Foundations.Homes
 
                 throw homeDependencyValidationException;
             }
+            catch(DbUpdateException dbUpdateException)
+            {
+                var failedHomeStorageException =
+                    new FailedHomeStorageException(dbUpdateException);
+
+                var homeDependencyException =
+                    new HomeDependencyException(failedHomeStorageException);
+
+                this.loggingBroker.LogError(homeDependencyException);
+
+                throw homeDependencyException;
+            }
         }
     }
 }

@@ -12,6 +12,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Xeptions;
 
 namespace Shenam.Api.Tests.Unit.Services.Foundations.Homes
 {
@@ -89,6 +90,46 @@ namespace Shenam.Api.Tests.Unit.Services.Foundations.Homes
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogError(
                     It.Is(SameExceptionAs(expectedHomeDependencyValidationException))),
+                        Times.Once);
+
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public async Task ShouldThrowDependencyExceptionOnModifyIfDbUpdateErrorOccursAndLogItAsync()
+        {
+            //given 
+            Home someHome = CreateRandomHome();
+            Guid homeId = someHome.Id;
+            var dbUpdateException = new DbUpdateException();
+
+            var failedHomeStorageException =
+                new FailedHomeStorageException(
+                    new Xeption(message: "Failed home storage error occured", dbUpdateException));
+
+            var expectedHomeDependencyException =
+                new HomeDependencyException(failedHomeStorageException);
+
+            this.storageBrokerMock.Setup(broker =>
+                broker.SelectHomeByIdAsync(homeId))
+                    .ThrowsAsync(dbUpdateException);
+
+            //when
+            ValueTask<Home> modifyHomeTask =
+                this.homeService.ModifyHomeAsync(someHome);
+
+            //then
+            await Assert.ThrowsAsync<HomeDependencyException>(() =>
+                modifyHomeTask.AsTask());
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.SelectHomeByIdAsync(homeId),
+                    Times.Once);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(
+                    It.Is(SameExceptionAs(expectedHomeDependencyException))),
                         Times.Once);
 
             this.storageBrokerMock.VerifyNoOtherCalls();
