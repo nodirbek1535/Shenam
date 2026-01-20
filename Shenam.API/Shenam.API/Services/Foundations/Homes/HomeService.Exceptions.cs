@@ -51,14 +51,12 @@ namespace Shenam.API.Services.Foundations.Homes
 
                 throw CreateAndLogDependencyValidationException(alreadyExistsHomeException);
             }
-            catch(LockedHomeException lockedHomeException)
+            catch(DbUpdateConcurrencyException dbUpdateConcurrencyException)
             {
-                var homeDependencyValidationException =
-                    new HomeDependencyValidationException(lockedHomeException);
+                var lockedHomeException =
+                    new LockedHomeException(dbUpdateConcurrencyException);
 
-                this.loggingBroker.LogError(homeDependencyValidationException);
-
-                throw homeDependencyValidationException;
+                throw CreateAndLogDependencyValidationException(lockedHomeException);
             }
             catch(Exception exception)
             {

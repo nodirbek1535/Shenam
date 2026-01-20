@@ -72,7 +72,7 @@ namespace Shenam.Api.Tests.Unit.Services.Foundations.Homes
 
             this.storageBrokerMock.Setup(broker =>
                 broker.SelectHomeByIdAsync(homeId))
-                    .ThrowsAsync(lockedHomeExceotion);
+                    .ThrowsAsync(dbUpdateConcurencyException);
 
             //when
             ValueTask<Home> mofifyHomeTask =

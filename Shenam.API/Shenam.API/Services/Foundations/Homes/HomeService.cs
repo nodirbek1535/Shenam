@@ -3,6 +3,7 @@
 //===============================================================
 
 using Microsoft.Data.SqlClient;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking.Internal;
 using Shenam.API.Brokers.loggings;
 using Shenam.API.Brokers.Storages;
@@ -141,8 +142,11 @@ namespace Shenam.API.Services.Foundations.Homes
 
                 throw homeDependencyException;
             }
-            catch(LockedHomeException lockedHomeException)
+            catch(DbUpdateConcurrencyException dbUpdateConcurrencyException)
             {
+                var lockedHomeException =
+                    new LockedHomeException(dbUpdateConcurrencyException);
+
                 var homeDependencyValidationException =
                     new HomeDependencyValidationException(lockedHomeException);
 
