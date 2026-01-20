@@ -3,6 +3,7 @@
 //===============================================================
 
 using Microsoft.Data.SqlClient;
+using Microsoft.EntityFrameworkCore;
 using Moq;
 using Shenam.API.Models.Foundation.Homes;
 using Shenam.API.Models.Foundation.Homes.Exceptions;
@@ -53,6 +54,45 @@ namespace Shenam.Api.Tests.Unit.Services.Foundations.Homes
 
             this.storageBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public async Task ShouldThrowDependencyValidationExceptionOnModifyIfDbUpdateConcurrencyoccursAndLogItAsync()
+        {
+            //given
+            Home someHome = CreateRandomHome();
+            Guid homeId = someHome.Id;
+            var dbUpdateConcurencyException = new DbUpdateConcurrencyException();
+
+            var lockedHomeExceotion =
+                new LockedHomeException(dbUpdateConcurencyException);
+
+            var expectedHomeDependencyValidationException =
+                new HomeDependencyValidationException(lockedHomeExceotion);
+
+            this.storageBrokerMock.Setup(broker =>
+                broker.SelectHomeByIdAsync(homeId))
+                    .ThrowsAsync(lockedHomeExceotion);
+
+            //when
+            ValueTask<Home> mofifyHomeTask =
+                this.homeService.ModifyHomeAsync(someHome);
+
+            //then
+            await Assert.ThrowsAsync<HomeDependencyValidationException>(() =>
+                mofifyHomeTask.AsTask());
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.SelectHomeByIdAsync(homeId),
+                    Times.Once());
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(
+                    It.Is(SameExceptionAs(expectedHomeDependencyValidationException))),
+                        Times.Once);
+
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
         }
     }
 }
