@@ -44,19 +44,26 @@ namespace Shenam.API.Services.Foundations.Homes
 
                 throw CreateAndLogCriticalDependencyException(failedHomeStorageException);
             }
-            catch (DuplicateKeyException duplicateKeyException)
-            {
-                var alreadyExistsHomeException =
-                    new AlreadyExistsHomeException(duplicateKeyException);
-
-                throw CreateAndLogDependencyValidationException(alreadyExistsHomeException);
-            }
             catch(DbUpdateConcurrencyException dbUpdateConcurrencyException)
             {
                 var lockedHomeException =
                     new LockedHomeException(dbUpdateConcurrencyException);
 
                 throw CreateAndLogDependencyValidationException(lockedHomeException);
+            }
+            catch(DbUpdateException dbUpdateException)
+            {
+                var failedHomeStorageException =
+                    new FailedHomeStorageException(dbUpdateException);
+
+                throw CreateandLogDepedndencyException(failedHomeStorageException); 
+            }
+            catch (DuplicateKeyException duplicateKeyException)
+            {
+                var alreadyExistsHomeException =
+                    new AlreadyExistsHomeException(duplicateKeyException);
+
+                throw CreateAndLogDependencyValidationException(alreadyExistsHomeException);
             }
             catch(Exception exception)
             {
@@ -106,6 +113,16 @@ namespace Shenam.API.Services.Foundations.Homes
             this.loggingBroker.LogError(homeServiceException);
 
             return homeServiceException;
+        }
+
+        private HomeDependencyException CreateandLogDepedndencyException(Xeption exception)
+        {
+            var homeDependencyExcpetion =
+                new HomeDependencyException(exception);
+
+            this.loggingBroker.LogError(homeDependencyExcpetion);
+
+            return homeDependencyExcpetion;
         }
     }
 }

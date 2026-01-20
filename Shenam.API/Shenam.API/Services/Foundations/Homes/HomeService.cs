@@ -81,91 +81,18 @@ namespace Shenam.API.Services.Foundations.Homes
                 throw homeServiceException;
             }
         }
-        
-        public async ValueTask<Home> ModifyHomeAsync(Home home)
+
+        public ValueTask<Home> ModifyHomeAsync(Home home) =>
+        TryCatch(async () =>
         {
-            try
-            {
-                if(home is null)
-                {
-                    var nullHomeException = new NullHomeException();
+            ValidateHomeOnModify(home);
 
-                    var homeValidationException =
-                        new HomeValidationException(nullHomeException);
+            Home maybeHome =
+                await this.storageBroker.SelectHomeByIdAsync(home.Id);
 
-                    this.loggingBroker.LogError(homeValidationException);
+            ValidateStorageHome(maybeHome, home.Id);
 
-                    throw homeValidationException;
-                }
-                if(home.Id == Guid.Empty)
-                {
-                    var invalidHomeException = new InvalidHomeException();
-
-                    var homeValidationException =
-                        new HomeValidationException(invalidHomeException);
-
-                    this.loggingBroker.LogError(homeValidationException);
-
-                    throw homeValidationException;
-                }
-
-                Home maybeHome =
-                    await this.storageBroker.SelectHomeByIdAsync(home.Id);
-
-                if(maybeHome is null)
-                {
-                    var notFoundHomeException =
-                        new NotFoundHomeException(home.Id);
-
-                    var homeValidationException =
-                        new HomeValidationException(notFoundHomeException);
-
-                    this.loggingBroker.LogError(homeValidationException);
-
-                    throw homeValidationException;
-                }
-
-                Home updatedHome =
-                    await this.storageBroker.UpdateHomeAsync(home);
-
-                return updatedHome;
-            }
-            catch(SqlException sqlException)
-            {
-                var failedStorageException =
-                    new FailedHomeStorageException(sqlException);
-
-                var homeDependencyException =
-                    new HomeDependencyException(failedStorageException);
-
-                this.loggingBroker.LogCritical(homeDependencyException);
-
-                throw homeDependencyException;
-            }
-            catch(DbUpdateConcurrencyException dbUpdateConcurrencyException)
-            {
-                var lockedHomeException =
-                    new LockedHomeException(dbUpdateConcurrencyException);
-
-                var homeDependencyValidationException =
-                    new HomeDependencyValidationException(lockedHomeException);
-
-                this.loggingBroker.LogError(homeDependencyValidationException);
-
-                throw homeDependencyValidationException;
-            }
-            catch(DbUpdateException dbUpdateException)
-            {
-                var failedHomeStorageException =
-                    new FailedHomeStorageException(dbUpdateException);
-
-                var homeDependencyException =
-                    new HomeDependencyException(failedHomeStorageException);
-
-                this.loggingBroker.LogError(homeDependencyException);
-
-                throw homeDependencyException;
-            }
-        }
+            return await this.storageBroker.UpdateHomeAsync(home);
+        });
     }
 }
