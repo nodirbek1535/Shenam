@@ -124,6 +124,16 @@ namespace Shenam.API.Brokers.Storages
             return home;
         }
 
+        async ValueTask<Home> IStorageBroker.DeleteHomeAsync(Home home)
+        {
+            var broker = new StorageBroker(this.configuration);
+            broker.Entry(home).State = EntityState.Deleted;
+            await broker.SaveChangesAsync();
+
+            return home;
+        }
+
+        //HOMEREQUESTS
         async ValueTask<HomeRequest> IStorageBroker.InsertHomeRequestAsync(HomeRequest homeRequest)
         {
             var broker = new StorageBroker(this.configuration);
