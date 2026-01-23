@@ -34,6 +34,19 @@ namespace Shenam.API.Services.Foundations.Hosts
             }
         }
 
+        private void ValidateHostEntityId(Guid hostEntityId)
+        {
+            Validate(
+                (Rule: IsInvalid(hostEntityId), Parameter: nameof(HostEntity.Id)));
+        }
+
+        private void ValidateStorageHostEntity(HostEntity maybeHostEntity, Guid hostEntityId)
+        {
+            if (maybeHostEntity is null)
+            {
+                throw new NotFoundHostEntityException(hostEntityId);
+            }
+        }
         private static dynamic IsInvalid(Guid id) => new
         {
             Condition = id == Guid.Empty,
