@@ -51,5 +51,43 @@ namespace Shenam.Api.Tests.Unit.Services.Foundations.Hosts
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
         }
+
+        [Fact]
+        public async Task ShouldThrowNotFoundExceptionOnRetrieveByIdIfHostEntityIsNotFoundAndLogItAsync()
+        {
+            // given
+            Guid someHostEntityId = Guid.NewGuid();
+            HostEntity noHostEntity = null;
+
+            var notFoundHostEntityException =
+                new NotFoundHostEntityException(someHostEntityId);
+
+            var expectedHostEntityValidationException =
+                new HostEntityValidationException(notFoundHostEntityException);
+
+            this.storageBrokerMock.Setup(broker =>
+                broker.SelectHostEntityByIdAsync(It.IsAny<Guid>()))
+                    .ReturnsAsync(noHostEntity);
+
+            // when
+            ValueTask<HostEntity> retrieveHostEntityByIdTask =
+                this.hostEntityService.RetrieveHostEntityByIdAsync(someHostEntityId);
+
+            // then
+            await Assert.ThrowsAsync<HostEntityValidationException>(
+                retrieveHostEntityByIdTask.AsTask);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.SelectHostEntityByIdAsync(It.IsAny<Guid>()),
+                    Times.Once);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(
+                    SameExceptionAs(expectedHostEntityValidationException))),
+                        Times.Once);
+
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+        }
     }
 }
