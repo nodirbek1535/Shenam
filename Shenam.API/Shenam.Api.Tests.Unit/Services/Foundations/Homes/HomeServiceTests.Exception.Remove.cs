@@ -3,6 +3,7 @@
 //===============================================================
 
 using Microsoft.Data.SqlClient;
+using Microsoft.EntityFrameworkCore;
 using Moq;
 using Shenam.API.Models.Foundation.Homes;
 using Shenam.API.Models.Foundation.Homes.Exceptions;
@@ -44,6 +45,44 @@ namespace Shenam.Api.Tests.Unit.Services.Foundations.Homes
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogCritical(It.Is(SameExceptionAs(
                     expectedHomeDependencyException))),
+                        Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.SelectHomeByIdAsync(someHomeId),
+                    Times.Once);
+
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public async Task ShouldThrowDependencyValidationExceptionOnRemoveIfDbUpdateConcurrencyOccursAndLogItAsync()
+        {
+            //given
+            Guid someHomeId = Guid.NewGuid();
+            var dbUpdateConcurrencyException = new DbUpdateConcurrencyException();
+
+            var lockedHomeException =
+                new LockedHomeException(dbUpdateConcurrencyException);
+
+            var expectedHomeDependencyValidationException =
+                new HomeDependencyValidationException(lockedHomeException);
+
+            this.storageBrokerMock.Setup(broker =>
+                broker.SelectHomeByIdAsync(someHomeId))
+                    .ThrowsAsync(dbUpdateConcurrencyException);
+
+            //when
+            ValueTask<Home> removeHomeTask =
+                this.homeService.RemoveHomeByIdAsync(someHomeId);
+
+            //then
+            await Assert.ThrowsAsync<HomeDependencyValidationException>(() =>
+                removeHomeTask.AsTask());
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedHomeDependencyValidationException))),
                         Times.Once);
 
             this.storageBrokerMock.Verify(broker =>
