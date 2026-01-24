@@ -40,6 +40,15 @@ namespace Shenam.Api.Tests.Unit.Services.Foundations.Hosts
         private static int GetRandomNumber() =>
             new IntRange(min: 2, max: 9).GetValue();
 
+        private static IQueryable<HostEntity> CreateRandomHostEntities()
+        {
+            int randomCount = GetRandomNumber();
+
+            return Enumerable.Range(0, randomCount)
+                .Select(_ => CreateRandomHostEntity())
+                .AsQueryable();
+        }
+
         private static SqlException GetSqlError() =>
             (SqlException)FormatterServices.GetUninitializedObject(typeof(SqlException));
 

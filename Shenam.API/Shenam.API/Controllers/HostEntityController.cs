@@ -4,10 +4,12 @@
 
 using Microsoft.AspNetCore.Mvc;
 using RESTFulSense.Controllers;
+using Shenam.API.Models.Foundation.Guests.Exceptions;
 using Shenam.API.Models.Foundation.Hosts;
 using Shenam.API.Models.Foundation.Hosts.Exceptions;
 using Shenam.API.Services.Foundations.Hosts;
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace Shenam.API.Controllers
@@ -77,7 +79,28 @@ namespace Shenam.API.Controllers
             {
                 return InternalServerError(hostEntityServiceException.InnerException);
             }
+        }
 
+        [HttpGet]
+        public ActionResult<IQueryable<HostEntity>> GetAllHostEntities()
+        {
+            try
+            {
+                IQueryable<HostEntity> hostEntitys =
+                    this.hostEntityService.RetrieveAllHostEntities();
+
+                return Ok(hostEntitys);
+            }
+            catch (HostEntityDependencyException hostEntityDependencyException)
+            {
+                return InternalServerError(
+                    hostEntityDependencyException.InnerException);
+            }
+            catch (GuestServiceException guestServiceException)
+            {
+                return InternalServerError(
+                    guestServiceException.InnerException);
+            }
         }
     }
 }

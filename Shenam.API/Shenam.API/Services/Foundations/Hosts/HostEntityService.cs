@@ -2,10 +2,14 @@
 //NODIRBEKNING MOHIRDEV PLATFORMASIDA ORGANGAN API SINOV LOYIHASI
 //===============================================================
 
+using System;
+using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.Data.SqlClient;
 using Shenam.API.Brokers.loggings;
 using Shenam.API.Brokers.Storages;
 using Shenam.API.Models.Foundation.Hosts;
+using Shenam.API.Models.Foundation.Hosts.Exceptions;
 
 namespace Shenam.API.Services.Foundations.Hosts
 {
@@ -42,5 +46,39 @@ namespace Shenam.API.Services.Foundations.Hosts
 
             return maybeHostEntity;
         });
+
+        public IQueryable<HostEntity> RetrieveAllHostEntities()
+        {
+            try
+            {
+                return this.storageBroker.SelectAllHostEntities();
+            }
+            catch (SqlException sqlException)
+            {
+                var failedHostEntityStorageException =
+                    new FailedHostEntityStorageException(sqlException);
+
+                var hostEntityDependencyException =
+                    new HostEntityDependencyException(failedHostEntityStorageException);
+
+                this.loggingBroker.LogCritical(hostEntityDependencyException);
+
+                throw hostEntityDependencyException;
+            }
+            catch (Exception exception)
+            {
+                var failedHostEntityServiceException =
+                    new FailedHostEntityServiceException(exception);
+
+                var hostEntityServiceException =
+                    new HostEntityServiceException(failedHostEntityServiceException);
+
+                this.loggingBroker.LogError(hostEntityServiceException);
+
+                throw new HostEntityServiceException(failedHostEntityServiceException);
+            }
+        }
+        
+
     }
 }
