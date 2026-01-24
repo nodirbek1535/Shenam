@@ -2,6 +2,7 @@
 //NODIRBEKNING MOHIRDEV PLATFORMASIDA ORGANGAN API SINOV LOYIHASI
 //===============================================================
 
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
@@ -25,7 +26,7 @@ namespace Shenam.API.Brokers.Storages
             return homeEntityEntry.Entity;
         }
 
-        public async ValueTask<Home> SelectHomeByIdAsync(System.Guid homeId)
+        public async ValueTask<Home> SelectHomeByIdAsync(Guid homeId)
         {
             using var broker = new StorageBroker(this.configuration);
 

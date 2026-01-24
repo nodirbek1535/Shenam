@@ -29,5 +29,13 @@ namespace Shenam.API.Brokers.Storages
         {
             throw new NotImplementedException();
         }
+
+        public async ValueTask<HostEntity> SelectHostEntityByIdAsync(Guid hostEntityId)
+        {
+            using var broker = new StorageBroker(this.configuration);
+
+            return await broker.Hosts
+                .FirstOrDefaultAsync(hostEntity => hostEntity.Id == hostEntityId);
+        }
     }
 }

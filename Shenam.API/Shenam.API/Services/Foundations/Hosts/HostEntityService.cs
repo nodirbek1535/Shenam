@@ -29,5 +29,18 @@ namespace Shenam.API.Services.Foundations.Hosts
 
             return await this.storageBroker.InsertHostEntityAsync(host);
         });
+
+        public ValueTask<HostEntity> RetrieveHostEntityByIdAsync(System.Guid hostEntityId) =>
+        TryCatch(async () =>
+        {
+            ValidateHostEntityId(hostEntityId);
+
+            HostEntity maybeHostEntity =
+                await this.storageBroker.SelectHostEntityByIdAsync(hostEntityId);
+
+            ValidateStorageHostEntity(maybeHostEntity, hostEntityId);
+
+            return maybeHostEntity;
+        });
     }
 }

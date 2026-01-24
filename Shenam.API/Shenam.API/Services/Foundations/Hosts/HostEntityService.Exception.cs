@@ -31,6 +31,10 @@ namespace Shenam.API.Services.Foundations.Hosts
             {
                 throw CreateAndLogValidationException(invalidHostEntityException);
             }
+            catch(NotFoundHostEntityException notFoundHostEntityException)
+            {
+                throw CreateAndLogValidationException(notFoundHostEntityException);
+            }
             catch (SqlException sqlException)
             {
                 var failedHostEntityStorageException =
