@@ -70,6 +70,11 @@ namespace Shenam.API.Services.Foundations.Hosts
                 var failedHostEntityServiceException =
                     new FailedHostEntityServiceException(exception);
 
+                var hostEntityServiceException =
+                    new HostEntityServiceException(failedHostEntityServiceException);
+
+                this.loggingBroker.LogError(hostEntityServiceException);
+
                 throw new HostEntityServiceException(failedHostEntityServiceException);
             }
         }
