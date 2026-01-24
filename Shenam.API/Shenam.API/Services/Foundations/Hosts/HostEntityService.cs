@@ -58,7 +58,12 @@ namespace Shenam.API.Services.Foundations.Hosts
                 var failedHostEntityStorageException =
                     new FailedHostEntityStorageException(sqlException);
 
-                throw new HostEntityDependencyException(failedHostEntityStorageException);
+                var hostEntityDependencyException =
+                    new HostEntityDependencyException(failedHostEntityStorageException);
+
+                this.loggingBroker.LogCritical(hostEntityDependencyException);
+
+                throw hostEntityDependencyException;
             }
             catch (Exception exception)
             {
