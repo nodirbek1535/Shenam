@@ -3,6 +3,7 @@
 //===============================================================
 
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
@@ -37,5 +38,8 @@ namespace Shenam.API.Brokers.Storages
             return await broker.Hosts
                 .FirstOrDefaultAsync(hostEntity => hostEntity.Id == hostEntityId);
         }
+
+        public IQueryable<HostEntity> SelectAllHostEntities() =>
+            SelectAll<HostEntity>();
     }
 }

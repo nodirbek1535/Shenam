@@ -3,6 +3,7 @@
 //===============================================================
 
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 using Shenam.API.Models.Foundation.Hosts;
 
@@ -17,5 +18,7 @@ namespace Shenam.API.Brokers.Storages
         ValueTask<HostEntity> InsertHostEntityAsync(HostEntity hostEntity);
 
         ValueTask<HostEntity> SelectHostEntityByIdAsync(Guid hostEntityId);
+
+        IQueryable<HostEntity> SelectAllHostEntities();
     }
 }
