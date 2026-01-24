@@ -4,10 +4,12 @@
 
 using Microsoft.AspNetCore.Mvc;
 using RESTFulSense.Controllers;
+using Shenam.API.Models.Foundation.Guests.Exceptions;
 using Shenam.API.Models.Foundation.Homes;
 using Shenam.API.Models.Foundation.Homes.Exceptions;
 using Shenam.API.Services.Foundations.Homes;
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace Shenam.API.Controllers
@@ -64,6 +66,94 @@ namespace Shenam.API.Controllers
             catch (HomeValidationException homeValidationException)
             {
                 return BadRequest(homeValidationException.InnerException);
+            }
+            catch (HomeDependencyException homeDependencyException)
+            {
+                return InternalServerError(homeDependencyException.InnerException);
+            }
+            catch (HomeServiceException homeServiceException)
+            {
+                return InternalServerError(homeServiceException.InnerException);
+            }
+        }
+
+        [HttpGet]
+        public ActionResult<IQueryable<Home>> GetAllHomes()
+        {
+            try
+            {
+                IQueryable<Home> homes =
+                    this.homeService.RetrieveAllHomes();
+
+                return Ok(homes);
+            }
+            catch (HomeDependencyException homeDependencyException)
+            {
+                return InternalServerError(
+                    homeDependencyException.InnerException);
+            }
+            catch (GuestServiceException guestServiceException)
+            {
+                return InternalServerError(
+                    guestServiceException.InnerException);
+            }
+        }
+
+        [HttpPut]
+        public async ValueTask<ActionResult<Home>> PutHomeAsync(Home home)
+        {
+            try
+            {
+                Home modifiedHome =
+                    await this.homeService.ModifyHomeAsync(home);
+
+                return Ok(modifiedHome);
+            }
+            catch (HomeValidationException homeValidationException)
+            {
+                return BadRequest(homeValidationException.InnerException);
+            }
+            catch (HomeDependencyValidationException homeDependencyValidationException)
+                when (homeDependencyValidationException.InnerException is LockedHomeException)
+            {
+                return Locked(homeDependencyValidationException.InnerException);
+            }
+            catch (HomeDependencyValidationException homeDependencyValidationException)
+            {
+                return BadRequest(homeDependencyValidationException.InnerException);
+            }
+            catch (HomeDependencyException homeDependencyException)
+            {
+                return InternalServerError(homeDependencyException.InnerException);
+            }
+            catch (HomeServiceException homeServiceException)
+            {
+                return InternalServerError(homeServiceException.InnerException);
+            }
+        }
+
+        [HttpDelete("{homeId}")]
+        public async ValueTask<ActionResult<Home>> DeleteHomeByIdAsync(Guid homeId)
+        {
+            try
+            {
+                Home deletedHome =
+                    await this.homeService.RemoveHomeByIdAsync(homeId);
+
+                return Ok(deletedHome);
+            }
+            catch (HomeValidationException homeValidationException)
+            {
+                return BadRequest(homeValidationException.InnerException);
+            }
+            catch (HomeDependencyValidationException homeDependencyValidationException)
+                when (homeDependencyValidationException.InnerException is LockedHomeException)
+            {
+                return Locked(homeDependencyValidationException.InnerException);
+            }
+            catch (HomeDependencyValidationException homeDependencyValidationException)
+            {
+                return BadRequest(homeDependencyValidationException.InnerException);
             }
             catch (HomeDependencyException homeDependencyException)
             {

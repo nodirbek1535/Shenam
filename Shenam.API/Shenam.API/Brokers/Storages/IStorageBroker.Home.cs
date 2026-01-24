@@ -3,6 +3,7 @@
 //===============================================================
 
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 using Shenam.API.Models.Foundation.Homes;
 
@@ -17,5 +18,11 @@ namespace Shenam.API.Brokers.Storages
         ValueTask<Home> InsertHomeAsync(Home home);
 
         ValueTask<Home> SelectHomeByIdAsync(Guid homeId);
+
+        IQueryable<Home> SelectAllHomes();
+
+        ValueTask<Home> UpdateHomeAsync(Home home);
+
+        ValueTask<Home> DeleteHomeAsync(Home home);
     }
 }

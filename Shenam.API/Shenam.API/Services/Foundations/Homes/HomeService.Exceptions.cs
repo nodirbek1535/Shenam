@@ -4,9 +4,11 @@
 
 using EFxceptions.Models.Exceptions;
 using Microsoft.Data.SqlClient;
+using Microsoft.EntityFrameworkCore;
 using Shenam.API.Models.Foundation.Homes;
 using Shenam.API.Models.Foundation.Homes.Exceptions;
 using System;
+using System.Data;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
 using Xeptions;
@@ -41,6 +43,20 @@ namespace Shenam.API.Services.Foundations.Homes
                     new FailedHomeStorageException(sqlException);
 
                 throw CreateAndLogCriticalDependencyException(failedHomeStorageException);
+            }
+            catch(DbUpdateConcurrencyException dbUpdateConcurrencyException)
+            {
+                var lockedHomeException =
+                    new LockedHomeException(dbUpdateConcurrencyException);
+
+                throw CreateAndLogDependencyValidationException(lockedHomeException);
+            }
+            catch(DbUpdateException dbUpdateException)
+            {
+                var failedHomeStorageException =
+                    new FailedHomeStorageException(dbUpdateException);
+
+                throw CreateandLogDepedndencyException(failedHomeStorageException); 
             }
             catch (DuplicateKeyException duplicateKeyException)
             {
@@ -97,6 +113,16 @@ namespace Shenam.API.Services.Foundations.Homes
             this.loggingBroker.LogError(homeServiceException);
 
             return homeServiceException;
+        }
+
+        private HomeDependencyException CreateandLogDepedndencyException(Xeption exception)
+        {
+            var homeDependencyExcpetion =
+                new HomeDependencyException(exception);
+
+            this.loggingBroker.LogError(homeDependencyExcpetion);
+
+            return homeDependencyExcpetion;
         }
     }
 }

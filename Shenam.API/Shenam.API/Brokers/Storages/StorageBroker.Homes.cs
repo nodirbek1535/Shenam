@@ -3,6 +3,7 @@
 //===============================================================
 
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
@@ -31,6 +32,31 @@ namespace Shenam.API.Brokers.Storages
 
             return await broker.Homes
                 .FirstOrDefaultAsync(home => home.Id == homeId);
+        }
+
+        public IQueryable<Home> SelectAllHomes() =>
+            SelectAll<Home>();
+
+        public async ValueTask<Home> UpdateHomeAsync(Home home)
+        {
+            using var broker = new StorageBroker(this.configuration);
+
+            broker.Homes.Update(home);
+            await broker.SaveChangesAsync();
+
+            return home;
+        }
+
+        public async ValueTask<Home> DeleteHomeAsync(Home home)
+        {
+            using var broker = new StorageBroker(this.configuration);
+
+            EntityEntry<Home> homeEntityEntry =
+                broker.Homes.Remove(home);
+
+            await broker.SaveChangesAsync();
+
+            return homeEntityEntry.Entity;
         }
     }
 }

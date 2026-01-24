@@ -34,6 +34,15 @@ namespace Shenam.Api.Tests.Unit.Services.Foundations.Homes
         private static Home CreateRandomHome() =>
             CreateHomeFiller().Create();
 
+        private static IQueryable<Home> CreateRandomHomes()
+        {
+            int randomNumber = GetRandomNumber();
+
+            return Enumerable.Range(0, randomNumber)
+                .Select(_ => CreateHomeFiller().Create())
+                .AsQueryable();
+        }
+
         private static int GetRandomNumber() =>
             new IntRange(min: 4, max: 20).GetValue();
 
