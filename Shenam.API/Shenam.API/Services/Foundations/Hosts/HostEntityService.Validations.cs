@@ -3,6 +3,7 @@
 //===============================================================
 
 using System;
+using System.Data;
 using Shenam.API.Models.Foundation.Guests;
 using Shenam.API.Models.Foundation.Hosts;
 using Shenam.API.Models.Foundation.Hosts.Exceptions;
@@ -25,7 +26,21 @@ namespace Shenam.API.Services.Foundations.Hosts
                     (Rule: IsInvalid(hostEntity.Gender), Parameter: nameof(HostEntity.Gender))
                         );
         }
+        private void ValidateHostEntityOnModify(HostEntity hostEntity)
+        {
+            ValidateHostEntityNotNull(hostEntity);
 
+            ValidateHostEntityId(hostEntity.Id);
+
+            Validate(
+                (Rule: IsInvalid(hostEntity.FirstName), Parameter: nameof(HostEntity.FirstName)),
+                (Rule: IsInvalid(hostEntity.LastName), Parameter: nameof(HostEntity.LastName)),
+                (Rule: IsInvalid(hostEntity.DateOfBirth), Parameter: nameof(HostEntity.DateOfBirth)),
+                (Rule: IsInvalid(hostEntity.Email), Parameter: nameof(HostEntity.Email)),
+                (Rule: IsInvalid(hostEntity.PhoneNumber), Parameter: nameof(HostEntity.PhoneNumber)),
+                (Rule: IsInvalid(hostEntity.Gender), Parameter: nameof(HostEntity.Gender))
+                    );
+        }
         private void ValidateHostEntityNotNull(HostEntity hostEntity)
         {
             if (hostEntity is null)

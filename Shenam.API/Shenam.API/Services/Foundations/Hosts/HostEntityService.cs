@@ -78,56 +78,18 @@ namespace Shenam.API.Services.Foundations.Hosts
                 throw new HostEntityServiceException(failedHostEntityServiceException);
             }
         }
-        
-        public async ValueTask<HostEntity> ModifyHostEntityAsync(HostEntity hostEntity)
+
+        public ValueTask<HostEntity> ModifyHostEntityAsync(HostEntity hostEntity) =>
+        TryCatch(async () =>
         {
-            if(hostEntity == null)
-            {
-                var nullHostEntityException = new NullHostEntityException();
-
-                var hostEntityValidationException =
-                    new HostEntityValidationException(nullHostEntityException);
-
-                this.loggingBroker.LogError(hostEntityValidationException);
-
-                throw hostEntityValidationException;
-            }
-            if(hostEntity.Id == Guid.Empty)
-            {
-                var invalidHostEntityException = new InvalidHostEntityException();
-
-                invalidHostEntityException.AddData(
-                    key: nameof(HostEntity.Id),
-                    values: "Id is required");
-
-                var hostEntityValidationException =
-                    new HostEntityValidationException(invalidHostEntityException);
-
-                this.loggingBroker.LogError(hostEntityValidationException);
-
-                throw hostEntityValidationException;
-            }
+            ValidateHostEntityOnModify(hostEntity);
 
             HostEntity maybeHostEntity =
                 await this.storageBroker.SelectHostEntityByIdAsync(hostEntity.Id);
 
-            if (maybeHostEntity is null)
-            {
-                var notFoundHostEntityException =
-                    new NotFoundHostEntityException(hostEntity.Id);
+            ValidateStorageHostEntity(maybeHostEntity, hostEntity.Id);
 
-                var hostEntityValidationException =
-                    new HostEntityValidationException(notFoundHostEntityException);
-
-                this.loggingBroker.LogError(hostEntityValidationException);
-
-                throw hostEntityValidationException;
-            }
-
-            HostEntity updateHostEntity =
-                await this.storageBroker.UpdateHostEntityAsync(hostEntity);
-
-            return updateHostEntity;
-        }
+            return await this.storageBroker.UpdateHostEntityAsync(hostEntity);
+        }); 
     }
 }
