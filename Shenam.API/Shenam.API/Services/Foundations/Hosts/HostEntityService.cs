@@ -108,6 +108,22 @@ namespace Shenam.API.Services.Foundations.Hosts
                 throw hostEntityValidationException;
             }
 
+            HostEntity maybeHostEntity =
+                await this.storageBroker.SelectHostEntityByIdAsync(hostEntity.Id);
+
+            if (maybeHostEntity is null)
+            {
+                var notFoundHostEntityException =
+                    new NotFoundHostEntityException(hostEntity.Id);
+
+                var hostEntityValidationException =
+                    new HostEntityValidationException(notFoundHostEntityException);
+
+                this.loggingBroker.LogError(hostEntityValidationException);
+
+                throw hostEntityValidationException;
+            }
+
             return hostEntity;
         }
     }
