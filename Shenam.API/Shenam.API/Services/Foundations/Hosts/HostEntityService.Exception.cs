@@ -2,13 +2,14 @@
 //NODIRBEKNING MOHIRDEV PLATFORMASIDA ORGANGAN API SINOV LOYIHASI
 //===============================================================
 
-using System;
-using System.Threading.Tasks;
 using EFxceptions.Models.Exceptions;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
+using Shenam.API.Models.Foundation.Homes.Exceptions;
 using Shenam.API.Models.Foundation.Hosts;
 using Shenam.API.Models.Foundation.Hosts.Exceptions;
+using System;
+using System.Threading.Tasks;
 using Xeptions;
 
 namespace Shenam.API.Services.Foundations.Hosts
@@ -44,6 +45,20 @@ namespace Shenam.API.Services.Foundations.Hosts
                 throw CreateAndLogCriticalDependencyException(
                     failedHostEntityStorageException);
             }
+            catch(DbUpdateConcurrencyException dbUpdateConcurrencyException)
+            {
+                var lockedHostEntityException =
+                    new LockedHostEntityException(dbUpdateConcurrencyException);
+
+                throw CreateAndLogDependencyValidationException(lockedHostEntityException);
+            }
+            catch (DbUpdateException dbUpdateException)
+            {
+                var failedHostEntityStorageException =
+                    new FailedHostEntityStorageException(dbUpdateException);
+
+                throw CreateandLogDepedndencyException(failedHostEntityStorageException);
+            }
             catch (DuplicateKeyException duplicateKeyException)
             {
                 var alreadyExistsHostEntityException =
@@ -51,13 +66,6 @@ namespace Shenam.API.Services.Foundations.Hosts
 
                 throw CreateAndLogDependencyValidationException(
                     alreadyExistsHostEntityException);
-            }
-            catch(DbUpdateConcurrencyException dbUpdateConcurrencyException)
-            {
-                var lockedHostEntityException =
-                    new LockedHostEntityException(dbUpdateConcurrencyException);
-
-                throw CreateAndLogDependencyValidationException(lockedHostEntityException);
             }
             catch (Exception exception)
             {
@@ -106,6 +114,16 @@ namespace Shenam.API.Services.Foundations.Hosts
 
             this.loggingBroker.LogError(hostEntityServiceException);
             return hostEntityServiceException;
+        }
+
+        private HostEntityDependencyException CreateandLogDepedndencyException(Xeption exception)
+        {
+            var hostEntityDependencyExcpetion =
+                new HostEntityDependencyException(exception);
+
+            this.loggingBroker.LogError(hostEntityDependencyExcpetion);
+
+            return hostEntityDependencyExcpetion;
         }
     }
 }

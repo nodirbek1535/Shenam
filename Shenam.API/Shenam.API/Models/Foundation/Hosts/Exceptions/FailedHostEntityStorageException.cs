@@ -3,22 +3,16 @@
 //===============================================================
 
 using Microsoft.Data.SqlClient;
+using System;
 using Xeptions;
 
 namespace Shenam.API.Models.Foundation.Hosts.Exceptions
 {
     public class FailedHostEntityStorageException : Xeption
     {
-        private SqlException sqlException;
-
-        public FailedHostEntityStorageException(Xeption innerException)
+        public FailedHostEntityStorageException(Exception innerException)
             : base(message: "Failed hostEntity storage error occurred, contact support",
                  innerException)
         { }
-
-        public FailedHostEntityStorageException(SqlException sqlException)
-        {
-            this.sqlException = sqlException;
-        }
     }
 }

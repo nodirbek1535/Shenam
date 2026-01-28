@@ -12,6 +12,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Xeptions;
 
 namespace Shenam.Api.Tests.Unit.Services.Foundations.Hosts
 {
@@ -89,6 +90,46 @@ namespace Shenam.Api.Tests.Unit.Services.Foundations.Hosts
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogError(
                     It.Is(SameExceptionAs(expectedHostEntityDependencyValidationException))),
+                        Times.Once);
+
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public async Task ShouldThrowDependencyExceptionOnModifyIfDbUpdateErrorOccursAndLogItAsync()
+        {
+            //given 
+            HostEntity someHostEntity = CreateRandomHostEntity();
+            Guid hostEntityId = someHostEntity.Id;
+            var dbUpdateException = new DbUpdateException();
+
+            var failedHostEntityStorageException =
+                new FailedHostEntityStorageException(
+                    new Xeption(message: "Failed hostEntity storage error occured", dbUpdateException));
+
+            var expectedHostEntityDependencyException =
+                new HostEntityDependencyException(failedHostEntityStorageException);
+
+            this.storageBrokerMock.Setup(broker =>
+                broker.SelectHostEntityByIdAsync(hostEntityId))
+                    .ThrowsAsync(dbUpdateException);
+
+            //when
+            ValueTask<HostEntity> modifyHostEntityTask =
+                this.hostEntityService.ModifyHostEntityAsync(someHostEntity);
+
+            //then
+            await Assert.ThrowsAsync<HostEntityDependencyException>(() =>
+                modifyHostEntityTask.AsTask());
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.SelectHostEntityByIdAsync(hostEntityId),
+                    Times.Once);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(
+                    It.Is(SameExceptionAs(expectedHostEntityDependencyException))),
                         Times.Once);
 
             this.storageBrokerMock.VerifyNoOtherCalls();
