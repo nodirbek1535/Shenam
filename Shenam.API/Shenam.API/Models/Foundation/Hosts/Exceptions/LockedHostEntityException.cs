@@ -2,16 +2,15 @@
 //NODIRBEKNING MOHIRDEV PLATFORMASIDA ORGANGAN API SINOV LOYIHASI
 //===============================================================
 
-using Microsoft.Data.SqlClient;
 using System;
 using Xeptions;
 
 namespace Shenam.API.Models.Foundation.Hosts.Exceptions
 {
-    public class FailedHostEntityStorageException : Xeption
+    public class LockedHostEntityException : Xeption
     {
-        public FailedHostEntityStorageException(Exception innerException)
-            : base(message: "Failed hostEntity storage error occurred, contact support",
+        public LockedHostEntityException(Exception innerException)
+            : base(message: "HostEntity is locked and cannot be modified. Please try again later",
                  innerException)
         { }
     }

@@ -78,7 +78,18 @@ namespace Shenam.API.Services.Foundations.Hosts
                 throw new HostEntityServiceException(failedHostEntityServiceException);
             }
         }
-        
 
+        public ValueTask<HostEntity> ModifyHostEntityAsync(HostEntity hostEntity) =>
+        TryCatch(async () =>
+        {
+            ValidateHostEntityOnModify(hostEntity);
+
+            HostEntity maybeHostEntity =
+                await this.storageBroker.SelectHostEntityByIdAsync(hostEntity.Id);
+
+            ValidateStorageHostEntity(maybeHostEntity, hostEntity.Id);
+
+            return await this.storageBroker.UpdateHostEntityAsync(hostEntity);
+        }); 
     }
 }
