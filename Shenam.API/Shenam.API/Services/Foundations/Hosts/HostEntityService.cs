@@ -79,6 +79,9 @@ namespace Shenam.API.Services.Foundations.Hosts
             }
         }
         
-
+        public async ValueTask<HostEntity> ModifyHostEntityAsync(HostEntity hostEntity)
+        {
+            return hostEntity;
+        }
     }
 }
