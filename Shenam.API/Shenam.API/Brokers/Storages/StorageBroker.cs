@@ -105,6 +105,15 @@ namespace Shenam.API.Brokers.Storages
             return broker.Hosts;
         }
 
+        async ValueTask<HostEntity> IStorageBroker.UpdateHostEntityAsync(HostEntity hostEntity)
+        {
+            var broker = new StorageBroker(this.configuration);
+            broker.Entry(hostEntity).State = EntityState.Modified;
+            await broker.SaveChangesAsync();
+
+            return hostEntity;
+        }
+
         //HOMES
         async ValueTask<Home> IStorageBroker.InsertHomeAsync(Home home)
         {
