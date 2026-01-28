@@ -3,6 +3,7 @@
 //===============================================================
 
 using Microsoft.Data.SqlClient;
+using Microsoft.EntityFrameworkCore;
 using Moq;
 using Shenam.API.Models.Foundation.Hosts;
 using Shenam.API.Models.Foundation.Hosts.Exceptions;
@@ -53,6 +54,45 @@ namespace Shenam.Api.Tests.Unit.Services.Foundations.Hosts
 
             this.storageBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public async Task ShouldThrowDependencyValidationExceptionOnModifyIfDbUpdateConcurrencyoccursAndLogItAsync()
+        {
+            //given
+            HostEntity someHostEntity = CreateRandomHostEntity();
+            Guid hostEntityId = someHostEntity.Id;
+            var dbUpdateConcurencyException = new DbUpdateConcurrencyException();
+
+            var lockedHostEntityExceotion =
+                new LockedHostEntityException(dbUpdateConcurencyException);
+
+            var expectedHostEntityDependencyValidationException =
+                new HostEntityDependencyValidationException(lockedHostEntityExceotion);
+
+            this.storageBrokerMock.Setup(broker =>
+                broker.SelectHostEntityByIdAsync(hostEntityId))
+                    .ThrowsAsync(dbUpdateConcurencyException);
+
+            //when
+            ValueTask<HostEntity> mofifyHostEntityTask =
+                this.hostEntityService.ModifyHostEntityAsync(someHostEntity);
+
+            //then
+            await Assert.ThrowsAsync<HostEntityDependencyValidationException>(() =>
+                mofifyHostEntityTask.AsTask());
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.SelectHostEntityByIdAsync(hostEntityId),
+                    Times.Once());
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(
+                    It.Is(SameExceptionAs(expectedHostEntityDependencyValidationException))),
+                        Times.Once);
+
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
         }
     }
 }

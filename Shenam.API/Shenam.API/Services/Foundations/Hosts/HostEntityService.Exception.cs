@@ -6,6 +6,7 @@ using System;
 using System.Threading.Tasks;
 using EFxceptions.Models.Exceptions;
 using Microsoft.Data.SqlClient;
+using Microsoft.EntityFrameworkCore;
 using Shenam.API.Models.Foundation.Hosts;
 using Shenam.API.Models.Foundation.Hosts.Exceptions;
 using Xeptions;
@@ -50,6 +51,13 @@ namespace Shenam.API.Services.Foundations.Hosts
 
                 throw CreateAndLogDependencyValidationException(
                     alreadyExistsHostEntityException);
+            }
+            catch(DbUpdateConcurrencyException dbUpdateConcurrencyException)
+            {
+                var lockedHostEntityException =
+                    new LockedHostEntityException(dbUpdateConcurrencyException);
+
+                throw CreateAndLogDependencyValidationException(lockedHostEntityException);
             }
             catch (Exception exception)
             {
