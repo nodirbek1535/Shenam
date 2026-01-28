@@ -124,7 +124,10 @@ namespace Shenam.API.Services.Foundations.Hosts
                 throw hostEntityValidationException;
             }
 
-            return hostEntity;
+            HostEntity updateHostEntity =
+                await this.storageBroker.UpdateHostEntityAsync(hostEntity);
+
+            return updateHostEntity;
         }
     }
 }
