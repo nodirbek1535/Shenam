@@ -51,5 +51,48 @@ namespace Shenam.Api.Tests.Unit.Services.Foundations.Hosts
             this.storageBrokerMock.VerifyNoOtherCalls();
         }
 
+        [Fact]
+        public async Task ShouldThrowValidationExceptionOnModifyIfHostEntityIsInvalidAndLogItAsync()
+        {
+            //given
+            var invalidHostEntity = new HostEntity
+            {
+                Id = Guid.Empty
+            };
+
+            var invalidHostEntityException = new InvalidHostEntityException();
+
+            invalidHostEntityException.AddData(
+                key: nameof(HostEntity.Id),
+                values: "Id is required"
+                );
+
+            var expectedHostEntityValidationException =
+                new HostEntityValidationException(invalidHostEntityException);
+
+            //when
+            ValueTask<HostEntity> modifyHostEntityTask =
+                this.hostEntityService.ModifyHostEntityAsync(invalidHostEntity);
+
+            HostEntityValidationException actualHostEntityValidationException =
+                await Assert.ThrowsAsync<HostEntityValidationException>(
+                    modifyHostEntityTask.AsTask);
+
+            //then
+            actualHostEntityValidationException
+                .SameExceptionAs(expectedHostEntityValidationException)
+                .Should().BeTrue();
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedHostEntityValidationException))), Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.UpdateHostEntityAsync(It.IsAny<HostEntity>()), Times.Never);
+
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.storageBrokerMock.VerifyNoOtherCalls();
+        }
+
     }
 }

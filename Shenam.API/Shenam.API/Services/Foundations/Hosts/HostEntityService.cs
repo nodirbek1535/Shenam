@@ -92,6 +92,21 @@ namespace Shenam.API.Services.Foundations.Hosts
 
                 throw hostEntityValidationException;
             }
+            if(hostEntity.Id == Guid.Empty)
+            {
+                var invalidHostEntityException = new InvalidHostEntityException();
+
+                invalidHostEntityException.AddData(
+                    key: nameof(HostEntity.Id),
+                    values: "Id is required");
+
+                var hostEntityValidationException =
+                    new HostEntityValidationException(invalidHostEntityException);
+
+                this.loggingBroker.LogError(hostEntityValidationException);
+
+                throw hostEntityValidationException;
+            }
 
             return hostEntity;
         }
