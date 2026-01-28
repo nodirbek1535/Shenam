@@ -135,5 +135,44 @@ namespace Shenam.Api.Tests.Unit.Services.Foundations.Hosts
             this.storageBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }
+
+        [Fact]
+        public async Task ShouldThrowServiceExceptionOnModifyIfServiceErrorOccursAndLogItASync()
+        {
+            //given
+            HostEntity someHostEntity = CreateRandomHostEntity();
+            Guid hostEntityId = someHostEntity.Id;
+            var serviceException = new Exception();
+
+            var failedHostEntityServiceException =
+                new FailedHostEntityServiceException(serviceException);
+
+            var expectedHostEntityServiceException =
+                new HostEntityServiceException(failedHostEntityServiceException);
+
+            this.storageBrokerMock.Setup(broker =>
+                broker.SelectHostEntityByIdAsync(hostEntityId))
+                    .ThrowsAsync(serviceException);
+
+            //when
+            ValueTask<HostEntity> modifyHostEntityTask =
+                this.hostEntityService.ModifyHostEntityAsync(someHostEntity);
+
+            //then
+            await Assert.ThrowsAsync<HostEntityServiceException>(() =>
+                modifyHostEntityTask.AsTask());
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.SelectHostEntityByIdAsync(hostEntityId),
+                    Times.Once);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(
+                    It.Is(SameExceptionAs(expectedHostEntityServiceException))),
+                        Times.Once);
+
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.storageBrokerMock.VerifyNoOtherCalls();
+        }
     }
 }
