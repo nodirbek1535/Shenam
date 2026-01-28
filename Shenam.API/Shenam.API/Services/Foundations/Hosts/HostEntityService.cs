@@ -81,6 +81,18 @@ namespace Shenam.API.Services.Foundations.Hosts
         
         public async ValueTask<HostEntity> ModifyHostEntityAsync(HostEntity hostEntity)
         {
+            if(hostEntity == null)
+            {
+                var nullHostEntityException = new NullHostEntityException();
+
+                var hostEntityValidationException =
+                    new HostEntityValidationException(nullHostEntityException);
+
+                this.loggingBroker.LogError(hostEntityValidationException);
+
+                throw hostEntityValidationException;
+            }
+
             return hostEntity;
         }
     }
