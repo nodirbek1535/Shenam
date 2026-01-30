@@ -3,6 +3,7 @@
 //===============================================================
 
 using Microsoft.Data.SqlClient;
+using Microsoft.EntityFrameworkCore;
 using Moq;
 using Shenam.API.Models.Foundation.HomeRequests;
 using Shenam.API.Models.Foundation.HomeRequests.Exceptions;
@@ -49,6 +50,45 @@ namespace Shenam.Api.Tests.Unit.Services.Foundations.HomeRequests
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogCritical(
                     It.Is(SameExceptionAs(expectedHomeRequestDependencyException))),
+                Times.Once);
+
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public async Task ShouldThrowDependencyValidationExceptionOnModifyIfDbUpdateConcurrencyOccursAndLogItAsync()
+        {
+            // given
+            HomeRequest someHomeRequest = CreateRandomHomeRequest();
+            Guid homeRequestId = someHomeRequest.Id;
+            var dbUpdateConcurrencyException = new DbUpdateConcurrencyException();
+
+            var lockedHomeRequestException =
+                new LockedHomeRequestException(dbUpdateConcurrencyException);
+
+            var expectedHomeRequestDependencyValidationException =
+                new HomeRequestDependencyValidationException(lockedHomeRequestException);
+
+            this.storageBrokerMock.Setup(broker =>
+                broker.SelectHomeRequestByIdAsync(homeRequestId))
+                    .ThrowsAsync(dbUpdateConcurrencyException);
+
+            // when
+            ValueTask<HomeRequest> modifyHomeRequestTask =
+                this.homeRequestService.ModifyHomeRequestAsync(someHomeRequest);
+
+            // then
+            await Assert.ThrowsAsync<HomeRequestDependencyValidationException>(() =>
+                modifyHomeRequestTask.AsTask());
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.SelectHomeRequestByIdAsync(homeRequestId),
+                Times.Once);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(
+                    SameExceptionAs(expectedHomeRequestDependencyValidationException))),
                 Times.Once);
 
             this.storageBrokerMock.VerifyNoOtherCalls();

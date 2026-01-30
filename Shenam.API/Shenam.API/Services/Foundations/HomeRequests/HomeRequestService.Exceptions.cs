@@ -4,6 +4,7 @@
 
 using EFxceptions.Models.Exceptions;
 using Microsoft.Data.SqlClient;
+using Microsoft.EntityFrameworkCore;
 using Shenam.API.Models.Foundation.HomeRequests;
 using Shenam.API.Models.Foundation.HomeRequests.Exceptions;
 using System;
@@ -32,7 +33,7 @@ namespace Shenam.API.Services.Foundations.HomeRequests
             {
                 throw CreateAndLogValidationException(invalidHomeRequestException);
             }
-            catch(NotFoundHomeRequestException notFoundHomeRequestException)
+            catch (NotFoundHomeRequestException notFoundHomeRequestException)
             {
                 throw CreateAndLogValidationException(notFoundHomeRequestException);
             }
@@ -47,6 +48,13 @@ namespace Shenam.API.Services.Foundations.HomeRequests
                     new AlreadyExistsHomeRequestException(duplicateKeyException);
 
                 throw CreateAndLogDependencyValidationException(alreadyExistsHomeRequestException);
+            }
+            catch (DbUpdateConcurrencyException dbUpdateConcurrencyException)
+            {
+                var lockedHomeRequestException =
+                    new LockedHomeRequestException(dbUpdateConcurrencyException);
+
+                throw CreateAndLogDependencyValidationException(lockedHomeRequestException);
             }
             catch (Exception exception)
             {
