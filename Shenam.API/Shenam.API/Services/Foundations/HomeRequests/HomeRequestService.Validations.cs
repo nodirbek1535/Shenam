@@ -28,6 +28,19 @@ namespace Shenam.API.Services.Foundations.HomeRequests
                 );
         }
 
+        private void ValidateHomeRequestOnModify(HomeRequest homeRequest)
+        {
+            ValidateHomeRequestNotNull(homeRequest);
+
+            ValidateHomeRequestId(homeRequest.Id);
+
+            Validate(
+                (Rule: IsInvalid(homeRequest.Message), Parameter: nameof(HomeRequest.Message)),
+                (Rule: IsInvalid(homeRequest.StartDate), Parameter: nameof(HomeRequest.StartDate)),
+                (Rule: IsInvalid(homeRequest.EndDate), Parameter: nameof(HomeRequest.EndDate)),
+                (Rule: IsInvalid(homeRequest.UpdatedDate), Parameter: nameof(HomeRequest.UpdatedDate))
+                );
+        }
         private void ValidateHomeRequestNotNull(HomeRequest homeRequest)
         {
             if(homeRequest == null)

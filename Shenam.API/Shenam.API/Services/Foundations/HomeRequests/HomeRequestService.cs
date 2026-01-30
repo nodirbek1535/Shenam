@@ -7,6 +7,7 @@ using Shenam.API.Brokers.loggings;
 using Shenam.API.Brokers.Storages;
 using Shenam.API.Models.Foundation.HomeRequests;
 using Shenam.API.Models.Foundation.HomeRequests.Exceptions;
+using Shenam.API.Models.Foundation.Hosts;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
@@ -78,5 +79,18 @@ namespace Shenam.API.Services.Foundations.HomeRequests
                 throw homeRequestServiceException;
             }
         }
+
+        public ValueTask<HomeRequest> UpdateHomeRequestAsync(HomeRequest homeRequest) =>
+        TryCatch(async () =>
+        {
+            ValidateHomeRequestOnModify(homeRequest);
+
+            HomeRequest maybeHomeRequest =
+                await this.storageBroker.SelectHomeRequestByIdAsync(homeRequest.Id);
+
+            ValidateStorageHomeRequest(maybeHomeRequest, homeRequest.Id);
+
+            return await this.storageBroker.UpdateHomeRequestAsync(homeRequest);
+        });
     }
 }
