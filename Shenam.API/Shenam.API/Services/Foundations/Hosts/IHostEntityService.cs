@@ -15,5 +15,6 @@ namespace Shenam.API.Services.Foundations.Hosts
         ValueTask<HostEntity> RetrieveHostEntityByIdAsync(Guid hostEntityId);
         IQueryable<HostEntity> RetrieveAllHostEntities();
         ValueTask<HostEntity> ModifyHostEntityAsync(HostEntity hostEntity);
+        ValueTask<HostEntity> RemoveHostEntityByIdAsync(Guid hostEntityId);
     }
 }

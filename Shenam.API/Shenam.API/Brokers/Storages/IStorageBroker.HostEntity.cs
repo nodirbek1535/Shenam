@@ -22,5 +22,7 @@ namespace Shenam.API.Brokers.Storages
         IQueryable<HostEntity> SelectAllHostEntities();
 
         ValueTask<HostEntity> UpdateHostEntityAsync(HostEntity hostEntity);
+
+        ValueTask<HostEntity> DeleteHostEntityAsync(HostEntity hostEntity);
     }
 }

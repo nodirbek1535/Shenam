@@ -136,5 +136,38 @@ namespace Shenam.API.Controllers
             }
 
         }
+
+        [HttpDelete("{hostEntityId}")]
+        public async ValueTask<ActionResult<HostEntity>> DeleteHostEntityByIdAsync(Guid hostEntityId)
+        {
+            try
+            {
+                HostEntity deletedHostEntity =
+                    await this.hostEntityService.RemoveHostEntityByIdAsync(hostEntityId);
+
+                return Ok(deletedHostEntity);
+            }
+            catch (HostEntityValidationException hostEntityValidationException)
+            {
+                return BadRequest(hostEntityValidationException.InnerException);
+            }
+            catch (HostEntityDependencyValidationException hostEntityDependencyValidationException)
+                when (hostEntityDependencyValidationException.InnerException is LockedHostEntityException)
+            {
+                return Locked(hostEntityDependencyValidationException.InnerException);
+            }
+            catch (HostEntityDependencyValidationException hostEntityDependencyValidationException)
+            {
+                return BadRequest(hostEntityDependencyValidationException.InnerException);
+            }
+            catch (HostEntityDependencyException hostEntityDependencyException)
+            {
+                return InternalServerError(hostEntityDependencyException.InnerException);
+            }
+            catch (HostEntityServiceException hostEntityServiceException)
+            {
+                return InternalServerError(hostEntityServiceException.InnerException);
+            }
+        }
     }
 }
