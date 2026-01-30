@@ -96,5 +96,49 @@ namespace Shenam.Api.Tests.Unit.Services.Foundations.HomeRequests
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
         }
+
+        [Fact]
+        public async Task ShouldThrowValidationExceptionOnModifyIfHomeRequestDoesNotExistAndLogItAsync()
+        {
+            // given
+            HomeRequest randomHomeRequest = CreateRandomHomeRequest();
+            HomeRequest nonExistingHomeRequest = randomHomeRequest;
+            HomeRequest nullHomeRequest = null;
+
+            var notFoundHomeRequestException =
+                new NotFoundHomeRequestException(nonExistingHomeRequest.Id);
+
+            var expectedHomeRequestValidationException =
+                new HomeRequestValidationException(notFoundHomeRequestException);
+
+            this.storageBrokerMock.Setup(broker =>
+                broker.SelectHomeRequestByIdAsync(nonExistingHomeRequest.Id))
+                    .ReturnsAsync(nullHomeRequest);
+
+            // when
+            ValueTask<HomeRequest> modifyHomeRequestTask =
+                this.homeRequestService.ModifyHomeRequestAsync(nonExistingHomeRequest);
+
+            HomeRequestValidationException actualHomeRequestValidationException =
+                await Assert.ThrowsAsync<HomeRequestValidationException>(
+                    modifyHomeRequestTask.AsTask);
+
+            // then
+            actualHomeRequestValidationException
+                .SameExceptionAs(expectedHomeRequestValidationException)
+                .Should().BeTrue();
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.SelectHomeRequestByIdAsync(nonExistingHomeRequest.Id),
+                Times.Once);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedHomeRequestValidationException))),
+                Times.Once);
+
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+        }
     }
 }
