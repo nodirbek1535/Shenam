@@ -42,19 +42,26 @@ namespace Shenam.API.Services.Foundations.HomeRequests
                 var failedHomeRequestStorageException = new FailedHomeRequestStorageException(sqlException);
                 throw CreateAndLogCriticalDependencyException(failedHomeRequestStorageException);
             }
-            catch (DuplicateKeyException duplicateKeyException)
-            {
-                var alreadyExistsHomeRequestException =
-                    new AlreadyExistsHomeRequestException(duplicateKeyException);
-
-                throw CreateAndLogDependencyValidationException(alreadyExistsHomeRequestException);
-            }
             catch (DbUpdateConcurrencyException dbUpdateConcurrencyException)
             {
                 var lockedHomeRequestException =
                     new LockedHomeRequestException(dbUpdateConcurrencyException);
 
                 throw CreateAndLogDependencyValidationException(lockedHomeRequestException);
+            }
+            catch(DbUpdateException dbUpdateException)
+            {
+                var failedHomeRequestStorageException =
+                    new FailedHomeRequestStorageException(dbUpdateException);
+
+                throw CreateAndLogDependencyException(failedHomeRequestStorageException);
+            }
+            catch (DuplicateKeyException duplicateKeyException)
+            {
+                var alreadyExistsHomeRequestException =
+                    new AlreadyExistsHomeRequestException(duplicateKeyException);
+
+                throw CreateAndLogDependencyValidationException(alreadyExistsHomeRequestException);
             }
             catch (Exception exception)
             {
@@ -103,6 +110,15 @@ namespace Shenam.API.Services.Foundations.HomeRequests
             this.loggingBroker.LogError(homeRequestServiceException);
 
             return homeRequestServiceException;
+        }
+        public HomeRequestDependencyException CreateAndLogDependencyException(Xeption exception)
+        {
+            var homeRequestDependencyException =
+                new HomeRequestDependencyException(exception);
+
+            this.loggingBroker.LogError(homeRequestDependencyException);
+
+            return homeRequestDependencyException;
         }
     }
 }
