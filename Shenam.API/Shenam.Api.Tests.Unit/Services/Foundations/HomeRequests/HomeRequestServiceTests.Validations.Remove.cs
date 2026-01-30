@@ -5,6 +5,8 @@
 using Moq;
 using Shenam.API.Models.Foundation.HomeRequests;
 using Shenam.API.Models.Foundation.HomeRequests.Exceptions;
+using Shenam.API.Models.Foundation.Hosts;
+using Shenam.API.Models.Foundation.Hosts.Exceptions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,6 +17,44 @@ namespace Shenam.Api.Tests.Unit.Services.Foundations.HomeRequests
 {
     public partial class HomeRequestServiceTests
     {
+        [Fact]
+        public async Task ShouldThrowValidationExceptionOnRemoveIfHomeRequestIdIsInvalidAndLogItAsync()
+        {
+            // given
+            Guid invalidHomeRequestId = Guid.Empty;
+
+            var invalidHomeRequestException =
+                new InvalidHomeRequestException();
+
+            invalidHomeRequestException.AddData(
+                key: nameof(HomeRequest.Id),
+                values: "Id is required");
+
+            var expectedHomeRequestValidationException =
+                new HomeRequestValidationException(invalidHomeRequestException);
+
+            // when
+            ValueTask<HomeRequest> removeHomeRequestTask =
+                this.homeRequestService.RemoveHomeRequestByIdAsync(invalidHomeRequestId);
+
+            // then
+            await Assert.ThrowsAsync<HomeRequestValidationException>(() =>
+                removeHomeRequestTask.AsTask());
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedHomeRequestValidationException))),
+                Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.SelectHomeRequestByIdAsync(It.IsAny<Guid>()),
+                Times.Never);
+
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+        }
+
+        //bu 1 - commit bolib qolgan uni ozgartirish kerak
         [Fact]
         public async Task ShouldThrowValidationExceptionOnRemoveIfHomeRequestDoesNotExistAndLogItAsync()
         {
