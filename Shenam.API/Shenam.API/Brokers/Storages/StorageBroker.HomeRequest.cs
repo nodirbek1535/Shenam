@@ -2,6 +2,7 @@
 //NODIRBEKNING MOHIRDEV PLATFORMASIDA ORGANGAN API SINOV LOYIHASI
 //===============================================================
 
+using System;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
@@ -22,6 +23,14 @@ namespace Shenam.API.Brokers.Storages
             await broker.SaveChangesAsync();
 
             return homeRequestEntityEntry.Entity;
+        }
+
+        public async ValueTask<HomeRequest> SelectHomeRequestByIdAsync(Guid homeRequestId)
+        {
+            using var broker = new StorageBroker(this.configuration);
+
+            return await broker.HomeRequests
+                .FirstOrDefaultAsync(homeRequest => homeRequest.Id == homeRequestId);
         }
 
     }
