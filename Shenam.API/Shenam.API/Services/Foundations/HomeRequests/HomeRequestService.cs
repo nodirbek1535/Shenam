@@ -80,7 +80,7 @@ namespace Shenam.API.Services.Foundations.HomeRequests
             }
         }
 
-        public ValueTask<HomeRequest> UpdateHomeRequestAsync(HomeRequest homeRequest) =>
+        public ValueTask<HomeRequest> ModifyHomeRequestAsync(HomeRequest homeRequest) =>
         TryCatch(async () =>
         {
             ValidateHomeRequestOnModify(homeRequest);
