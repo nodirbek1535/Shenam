@@ -115,7 +115,7 @@ namespace Shenam.API.Services.Foundations.Hosts
             this.loggingBroker.LogError(hostEntityServiceException);
             return hostEntityServiceException;
         }
-
+        //xato
         private HostEntityDependencyException CreateandLogDepedndencyException(Xeption exception)
         {
             var hostEntityDependencyExcpetion =

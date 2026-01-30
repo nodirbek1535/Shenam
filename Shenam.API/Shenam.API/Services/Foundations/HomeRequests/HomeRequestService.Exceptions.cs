@@ -4,6 +4,7 @@
 
 using EFxceptions.Models.Exceptions;
 using Microsoft.Data.SqlClient;
+using Microsoft.EntityFrameworkCore;
 using Shenam.API.Models.Foundation.HomeRequests;
 using Shenam.API.Models.Foundation.HomeRequests.Exceptions;
 using System;
@@ -32,7 +33,7 @@ namespace Shenam.API.Services.Foundations.HomeRequests
             {
                 throw CreateAndLogValidationException(invalidHomeRequestException);
             }
-            catch(NotFoundHomeRequestException notFoundHomeRequestException)
+            catch (NotFoundHomeRequestException notFoundHomeRequestException)
             {
                 throw CreateAndLogValidationException(notFoundHomeRequestException);
             }
@@ -40,6 +41,20 @@ namespace Shenam.API.Services.Foundations.HomeRequests
             {
                 var failedHomeRequestStorageException = new FailedHomeRequestStorageException(sqlException);
                 throw CreateAndLogCriticalDependencyException(failedHomeRequestStorageException);
+            }
+            catch (DbUpdateConcurrencyException dbUpdateConcurrencyException)
+            {
+                var lockedHomeRequestException =
+                    new LockedHomeRequestException(dbUpdateConcurrencyException);
+
+                throw CreateAndLogDependencyValidationException(lockedHomeRequestException);
+            }
+            catch(DbUpdateException dbUpdateException)
+            {
+                var failedHomeRequestStorageException =
+                    new FailedHomeRequestStorageException(dbUpdateException);
+
+                throw CreateAndLogDependencyException(failedHomeRequestStorageException);
             }
             catch (DuplicateKeyException duplicateKeyException)
             {
@@ -95,6 +110,15 @@ namespace Shenam.API.Services.Foundations.HomeRequests
             this.loggingBroker.LogError(homeRequestServiceException);
 
             return homeRequestServiceException;
+        }
+        public HomeRequestDependencyException CreateAndLogDependencyException(Xeption exception)
+        {
+            var homeRequestDependencyException =
+                new HomeRequestDependencyException(exception);
+
+            this.loggingBroker.LogError(homeRequestDependencyException);
+
+            return homeRequestDependencyException;
         }
     }
 }
