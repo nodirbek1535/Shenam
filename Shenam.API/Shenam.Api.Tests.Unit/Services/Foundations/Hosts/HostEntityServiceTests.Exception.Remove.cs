@@ -3,6 +3,7 @@
 //===============================================================
 
 using Microsoft.Data.SqlClient;
+using Microsoft.EntityFrameworkCore;
 using Moq;
 using Shenam.API.Models.Foundation.Hosts;
 using Shenam.API.Models.Foundation.Hosts.Exceptions;
@@ -44,6 +45,44 @@ namespace Shenam.Api.Tests.Unit.Services.Foundations.Hosts
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogCritical(It.Is(SameExceptionAs(
                     expectedHostEntityDependencyException))),
+                        Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.SelectHostEntityByIdAsync(someHostEntityId),
+                    Times.Once);
+
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public async Task ShouldThrowDependencyValidationExceptionOnRemoveIfDbUpdateConcurrencyOccursAndLogItAsync()
+        {
+            //given
+            Guid someHostEntityId = Guid.NewGuid();
+            var dbUpdateConcurrencyException = new DbUpdateConcurrencyException();
+
+            var lockedHostEntityException =
+                new LockedHostEntityException(dbUpdateConcurrencyException);
+
+            var expectedHostEntityDependencyValidationException =
+                new HostEntityDependencyValidationException(lockedHostEntityException);
+
+            this.storageBrokerMock.Setup(broker =>
+                broker.SelectHostEntityByIdAsync(someHostEntityId))
+                    .ThrowsAsync(dbUpdateConcurrencyException);
+
+            //when
+            ValueTask<HostEntity> removeHostEntityTask =
+                this.hostEntityService.RemoveHostEntityByIdAsync(someHostEntityId);
+
+            //then
+            await Assert.ThrowsAsync<HostEntityDependencyValidationException>(() =>
+                removeHostEntityTask.AsTask());
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedHostEntityDependencyValidationException))),
                         Times.Once);
 
             this.storageBrokerMock.Verify(broker =>
