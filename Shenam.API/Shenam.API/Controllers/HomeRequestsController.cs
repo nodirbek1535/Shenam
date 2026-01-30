@@ -7,6 +7,8 @@ using RESTFulSense.Controllers;
 using Shenam.API.Models.Foundation.HomeRequests;
 using Shenam.API.Models.Foundation.HomeRequests.Exceptions;
 using Shenam.API.Services.Foundations.HomeRequests;
+using System;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace Shenam.API.Controllers
@@ -47,6 +49,52 @@ namespace Shenam.API.Controllers
             catch (HomeRequestServiceException homeRequestServiceException)
             {
                 return InternalServerError(homeRequestServiceException.InnerException);
+            }
+        }
+
+        [HttpGet("{homeRequestId}")]
+        public async ValueTask<ActionResult<HomeRequest>> GetHomeRequestByIdAsync(Guid homeRequestId)
+        {
+            try
+            {
+                HomeRequest homeRequest =
+                    await this.homeRequestService.RetrieveHomeRequestByIdAsync(homeRequestId);
+
+                return Ok(homeRequest);
+            }
+            catch (HomeRequestValidationException homeRequestValidationException)
+            {
+                return BadRequest(homeRequestValidationException.InnerException);
+            }
+            catch (HomeRequestDependencyException homeRequestDependencyException)
+            {
+                return InternalServerError(homeRequestDependencyException.InnerException);
+            }
+            catch (HomeRequestServiceException homeRequestServiceException)
+            {
+                return InternalServerError(homeRequestServiceException.InnerException);
+            }
+        }
+
+        [HttpGet]
+        public ActionResult<IQueryable<HomeRequest>> GetAllHomeRequests()
+        {
+            try
+            {
+                IQueryable<HomeRequest> homeRequests =
+                    this.homeRequestService.RetrieveAllHomeRequests();
+
+                return Ok(homeRequests);
+            }
+            catch (HomeRequestDependencyException homeRequestDependencyException)
+            {
+                return InternalServerError(
+                    homeRequestDependencyException.InnerException);
+            }
+            catch (HomeRequestServiceException homeRequestServiceException)
+            {
+                return InternalServerError(
+                    homeRequestServiceException.InnerException);
             }
         }
     }

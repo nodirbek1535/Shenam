@@ -15,13 +15,13 @@ using Xeptions;
 
 namespace Shenam.Api.Tests.Unit.Services.Foundations.HomeRequests
 {
-    public partial class HomeRequestTests
+    public partial class HomeRequestServiceTests
     {
         private readonly Mock<IStorageBroker> storageBrokerMock;
         private readonly Mock<ILoggingBroker> loggingBrokerMock;
         private readonly IHomeRequestService homeRequestService;
 
-        public HomeRequestTests()
+        public HomeRequestServiceTests()
         {
             this.storageBrokerMock = new Mock<IStorageBroker>();
             this.loggingBrokerMock = new Mock<ILoggingBroker>();
@@ -32,8 +32,18 @@ namespace Shenam.Api.Tests.Unit.Services.Foundations.HomeRequests
         }
 
         private static HomeRequest CreateRandomHomeRequest() =>
-            CreateHomeRequestFiller().Create(); 
+            CreateHomeRequestFiller().Create();
+        private static int GetRandomNumber() =>
+            new IntRange(min: 2, max: 9).GetValue();
 
+        private static IQueryable<HomeRequest> CreateRandomHomeRequests()
+        {
+            int randomCount = GetRandomNumber();
+
+            return Enumerable.Range(0, randomCount)
+                .Select(_ => CreateRandomHomeRequest())
+                .AsQueryable();
+        }
         private static SqlException GetSqlError()=>
             (SqlException)FormatterServices.GetUninitializedObject(typeof(SqlException));
 

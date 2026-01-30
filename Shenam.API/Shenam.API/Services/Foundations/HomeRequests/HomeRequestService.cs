@@ -2,10 +2,13 @@
 //NODIRBEKNING MOHIRDEV PLATFORMASIDA ORGANGAN API SINOV LOYIHASI
 //===============================================================
 
+using Microsoft.Data.SqlClient;
 using Shenam.API.Brokers.loggings;
 using Shenam.API.Brokers.Storages;
 using Shenam.API.Models.Foundation.HomeRequests;
 using Shenam.API.Models.Foundation.HomeRequests.Exceptions;
+using System;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace Shenam.API.Services.Foundations.HomeRequests
@@ -24,12 +27,56 @@ namespace Shenam.API.Services.Foundations.HomeRequests
         }
 
         public ValueTask<HomeRequest> AddHomeRequestAsync(HomeRequest homeRequest) =>
-            TryCatch(async () =>
+        TryCatch(async () =>
+        {
+            ValidateHomeRequestOnAdd(homeRequest);
+
+            return await this.storageBroker.InsertHomeRequestAsync(homeRequest);
+        });
+
+        public ValueTask<HomeRequest> RetrieveHomeRequestByIdAsync(Guid homeRequestId) =>
+        TryCatch(async () =>
+        {
+            ValidateHomeRequestId(homeRequestId);
+
+            HomeRequest maybeHomeRequest =
+                await this.storageBroker.SelectHomeRequestByIdAsync(homeRequestId);
+
+            ValidateStorageHomeRequest(maybeHomeRequest, homeRequestId);
+
+            return maybeHomeRequest;
+        });
+
+        public IQueryable<HomeRequest> RetrieveAllHomeRequests()
+        {
+            try
             {
-                ValidateHomeRequestOnAdd(homeRequest);
+                return this.storageBroker.SelectAllHomeRequests();
+            }
+            catch (SqlException sqlException)
+            {
+                var failedHomeRequestStorageException =
+                    new FailedHomeRequestStorageException(sqlException);
 
-                return await this.storageBroker.InsertHomeRequestAsync(homeRequest);
-            });
+                var homeRequestDependencyException =
+                    new HomeRequestDependencyException(failedHomeRequestStorageException);
 
+                this.loggingBroker.LogCritical(homeRequestDependencyException);
+
+                throw homeRequestDependencyException;
+            }
+            catch (Exception exception)
+            {
+                var failedHomeRequestServiceException =
+                    new FailedHomeRequestServiceException(exception);
+
+                var homeRequestServiceException =
+                    new HomeRequestServiceException(failedHomeRequestServiceException);
+
+                this.loggingBroker.LogError(homeRequestServiceException);
+
+                throw homeRequestServiceException;
+            }
+        }
     }
 }

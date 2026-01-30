@@ -8,7 +8,7 @@ using Shenam.API.Models.Foundation.HomeRequests.Exceptions;
 
 namespace Shenam.Api.Tests.Unit.Services.Foundations.HomeRequests
 {
-    public partial class HomeRequestTests
+    public partial class HomeRequestServiceTests
     {
         [Fact]
         public async Task ShouldThrowValidationExceptionOnAddIfHomeRequestIsNullAndLogItAsync()

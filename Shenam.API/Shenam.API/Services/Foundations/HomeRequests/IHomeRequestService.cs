@@ -3,6 +3,8 @@
 //===============================================================
 
 using Shenam.API.Models.Foundation.HomeRequests;
+using System;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace Shenam.API.Services.Foundations.HomeRequests
@@ -10,5 +12,9 @@ namespace Shenam.API.Services.Foundations.HomeRequests
     public interface IHomeRequestService
     {
         ValueTask<HomeRequest> AddHomeRequestAsync(HomeRequest homeRequest);
+
+        ValueTask<HomeRequest> RetrieveHomeRequestByIdAsync(Guid homeRequestId);
+
+        IQueryable<HomeRequest> RetrieveAllHomeRequests();
     }
 }

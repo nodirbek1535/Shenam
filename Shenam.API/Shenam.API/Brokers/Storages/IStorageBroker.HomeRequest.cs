@@ -2,6 +2,8 @@
 //NODIRBEKNING MOHIRDEV PLATFORMASIDA ORGANGAN API SINOV LOYIHASI
 //===============================================================
 
+using System;
+using System.Linq;
 using System.Threading.Tasks;
 using Shenam.API.Models.Foundation.HomeRequests;
 
@@ -14,5 +16,9 @@ namespace Shenam.API.Brokers.Storages
         //UPDATE
         //DELETE
         ValueTask<HomeRequest> InsertHomeRequestAsync(HomeRequest homeRequest);
+
+        ValueTask<HomeRequest> SelectHomeRequestByIdAsync(Guid homeRequestId);
+
+        IQueryable<HomeRequest> SelectAllHomeRequests();
     }
 }
