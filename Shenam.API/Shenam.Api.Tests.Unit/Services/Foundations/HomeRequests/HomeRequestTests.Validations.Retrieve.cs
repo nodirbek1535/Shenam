@@ -51,5 +51,43 @@ namespace Shenam.Api.Tests.Unit.Services.Foundations.HomeRequests
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
         }
+
+        [Fact]
+        public async Task ShouldThrowNotFoundExceptionOnRetrieveByIdIfHomeRequestIsNotFoundAndLogItAsync()
+        {
+            // given
+            Guid someHomeRequestId = Guid.NewGuid();
+            HomeRequest noHomeRequest = null;
+
+            var notFoundHomeRequestException =
+                new NotFoundHomeRequestException(someHomeRequestId);
+
+            var expectedHomeRequestValidationException =
+                new HomeRequestValidationException(notFoundHomeRequestException);
+
+            this.storageBrokerMock.Setup(broker =>
+                broker.SelectHomeRequestByIdAsync(It.IsAny<Guid>()))
+                    .ReturnsAsync(noHomeRequest);
+
+            // when
+            ValueTask<HomeRequest> retrieveHomeRequestByIdTask =
+                this.homeRequestService.RetrieveHomeRequestByIdAsync(someHomeRequestId);
+
+            // then
+            await Assert.ThrowsAsync<HomeRequestValidationException>(
+                retrieveHomeRequestByIdTask.AsTask);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.SelectHomeRequestByIdAsync(It.IsAny<Guid>()),
+                    Times.Once);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(
+                    SameExceptionAs(expectedHomeRequestValidationException))),
+                        Times.Once);
+
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+        }
     }
 }
