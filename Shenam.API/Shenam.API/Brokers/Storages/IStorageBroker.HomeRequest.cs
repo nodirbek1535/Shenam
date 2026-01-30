@@ -3,6 +3,7 @@
 //===============================================================
 
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 using Shenam.API.Models.Foundation.HomeRequests;
 
@@ -17,5 +18,7 @@ namespace Shenam.API.Brokers.Storages
         ValueTask<HomeRequest> InsertHomeRequestAsync(HomeRequest homeRequest);
 
         ValueTask<HomeRequest> SelectHomeRequestByIdAsync(Guid homeRequestId);
+
+        IQueryable<HomeRequest> SelectAllHomeRequests();
     }
 }
