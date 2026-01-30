@@ -92,5 +92,43 @@ namespace Shenam.Api.Tests.Unit.Services.Foundations.Hosts
             this.storageBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }
+
+        [Fact]
+        public async Task ShouldThrowDependencyExceptionOnRemoveIfDbUpdateErrorOccursAndLogItAsync()
+        {
+            //given
+            Guid someHostEntityId = Guid.NewGuid();
+            var dbUpdateException = new DbUpdateException();
+
+            var failedHostEntityException =
+                new FailedHostEntityStorageException(dbUpdateException);
+
+            var expectedHostEntityDependencyException =
+                new HostEntityDependencyException(failedHostEntityException);
+
+            this.storageBrokerMock.Setup(broker =>
+                broker.SelectHostEntityByIdAsync(someHostEntityId))
+                    .ThrowsAsync(dbUpdateException);
+
+            //when
+            ValueTask<HostEntity> removeHostEntityTask =
+                this.hostEntityService.RemoveHostEntityByIdAsync(someHostEntityId);
+
+            //then
+            await Assert.ThrowsAsync<HostEntityDependencyException>(() =>
+                removeHostEntityTask.AsTask());
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedHostEntityDependencyException))),
+                        Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.SelectHostEntityByIdAsync(someHostEntityId),
+                    Times.Once);
+
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+        }
     }
 }
