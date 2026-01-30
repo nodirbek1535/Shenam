@@ -96,6 +96,7 @@ namespace Shenam.API.Controllers
                 return InternalServerError(
                     hostEntityDependencyException.InnerException);
             }
+            //xatolik
             catch (GuestServiceException guestServiceException)
             {
                 return InternalServerError(
