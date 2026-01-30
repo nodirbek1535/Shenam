@@ -56,5 +56,45 @@ namespace Shenam.Api.Tests.Unit.Services.Foundations.HomeRequests
             this.storageBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }
+
+        [Fact]
+        public void ShouldThrowServiceExceptionOnRetrieveAllIfServiceErrorOccursAndLogIt()
+        {
+            // given
+            var serviceException = new Exception(GetRandomString());
+
+            var failedHomeRequestServiceException =
+                new FailedHomeRequestServiceException(serviceException);
+
+            var expectedHomeRequestServiceException =
+                new HomeRequestServiceException(failedHomeRequestServiceException);
+
+            this.storageBrokerMock.Setup(broker =>
+                broker.SelectAllHomeRequests())
+                    .Throws(serviceException);
+
+            // when
+            Action retrieveAllHomeRequestsAction = () =>
+                this.homeRequestService.RetrieveAllHomeRequests();
+
+            // then
+            HomeRequestServiceException actualException =
+                Assert.Throws<HomeRequestServiceException>(retrieveAllHomeRequestsAction);
+
+            actualException
+                .SameExceptionAs(expectedHomeRequestServiceException)
+                .Should().BeTrue();
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.SelectAllHomeRequests(), Times.Once);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(
+                    SameExceptionAs(expectedHomeRequestServiceException))),
+                    Times.Once);
+
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+        }
     }
 }

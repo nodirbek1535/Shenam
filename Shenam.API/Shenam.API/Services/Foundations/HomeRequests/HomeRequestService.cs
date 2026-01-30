@@ -57,13 +57,25 @@ namespace Shenam.API.Services.Foundations.HomeRequests
             {
                 var failedHomeRequestStorageException =
                     new FailedHomeRequestStorageException(sqlException);
-                throw CreateAndLogCriticalDependencyException(failedHomeRequestStorageException);
+
+                var homeRequestDependencyException =
+                    new HomeRequestDependencyException(failedHomeRequestStorageException);
+
+                this.loggingBroker.LogCritical(homeRequestDependencyException);
+
+                throw homeRequestDependencyException;
             }
             catch (Exception exception)
             {
                 var failedHomeRequestServiceException =
                     new FailedHomeRequestServiceException(exception);
-                throw CreateAndLogServiceException(failedHomeRequestServiceException);
+
+                var homeRequestServiceException =
+                    new HomeRequestServiceException(failedHomeRequestServiceException);
+
+                this.loggingBroker.LogError(homeRequestServiceException);
+
+                throw homeRequestServiceException;
             }
         }
     }
