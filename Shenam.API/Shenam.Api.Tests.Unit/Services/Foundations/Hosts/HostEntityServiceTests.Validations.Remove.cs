@@ -16,6 +16,43 @@ namespace Shenam.Api.Tests.Unit.Services.Foundations.Hosts
     public partial class HostEntityServiceTests
     {
         [Fact]
+        public async Task ShouldThrowValidationExceptionOnRemoveIfHostEntityIdIsInvalidAndLogItAsync()
+        {
+            //given
+            Guid invalidHostEntityId = Guid.Empty;
+
+            var invalidHostEntityException =
+                new InvalidHostEntityException();
+
+            invalidHostEntityException.AddData(
+                key: nameof(HostEntity.Id),
+                values: "Id is required");
+
+            var expectedHostEntityValidationException =
+                new HostEntityValidationException(invalidHostEntityException);
+
+            //when
+            ValueTask<HostEntity> removeHostEntityTask =
+                this.hostEntityService.RemoveHostEntityByIdAsync(invalidHostEntityId);
+
+            //then
+            await Assert.ThrowsAsync<HostEntityValidationException>(() =>
+                removeHostEntityTask.AsTask());
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedHostEntityValidationException))),
+                        Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.SelectHostEntityByIdAsync(It.IsAny<Guid>()),
+                    Times.Never);
+
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
         public async Task ShouldThrowValidationExceptionOnRemoveIfHostEntityDoesNotExistAndLogItAsync()
         {
             //given
