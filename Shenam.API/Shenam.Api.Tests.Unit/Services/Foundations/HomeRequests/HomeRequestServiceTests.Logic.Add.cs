@@ -8,7 +8,7 @@ using Shenam.API.Models.Foundation.HomeRequests;
 
 namespace Shenam.Api.Tests.Unit.Services.Foundations.HomeRequests
 {
-    public partial class HomeRequestTests
+    public partial class HomeRequestServiceTests
     {
         [Fact]
         public async Task ShouldAddHomeRequestWrongWayAsync()

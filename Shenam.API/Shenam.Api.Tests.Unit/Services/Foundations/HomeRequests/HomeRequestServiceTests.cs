@@ -15,13 +15,13 @@ using Xeptions;
 
 namespace Shenam.Api.Tests.Unit.Services.Foundations.HomeRequests
 {
-    public partial class HomeRequestTests
+    public partial class HomeRequestServiceTests
     {
         private readonly Mock<IStorageBroker> storageBrokerMock;
         private readonly Mock<ILoggingBroker> loggingBrokerMock;
         private readonly IHomeRequestService homeRequestService;
 
-        public HomeRequestTests()
+        public HomeRequestServiceTests()
         {
             this.storageBrokerMock = new Mock<IStorageBroker>();
             this.loggingBrokerMock = new Mock<ILoggingBroker>();

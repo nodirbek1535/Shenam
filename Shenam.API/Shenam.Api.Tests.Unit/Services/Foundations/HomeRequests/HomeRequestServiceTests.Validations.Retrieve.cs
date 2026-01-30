@@ -13,7 +13,7 @@ using System.Threading.Tasks;
 
 namespace Shenam.Api.Tests.Unit.Services.Foundations.HomeRequests
 {
-    public partial class HomeRequestTests
+    public partial class HomeRequestServiceTests
     {
         [Fact]
         public async Task ShouldThrowValidationExceptionOnRetrieveByIdIfIdIsInvalidAndLogItAsync()
