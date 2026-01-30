@@ -92,5 +92,18 @@ namespace Shenam.API.Services.Foundations.HomeRequests
 
             return await this.storageBroker.UpdateHomeRequestAsync(homeRequest);
         });
+
+        public ValueTask<HomeRequest> RemoveHomeRequestByIdAsync(Guid homeRequestId) =>
+        TryCatch(async () =>
+        {
+            ValidateHomeRequestId(homeRequestId);
+
+            HomeRequest maybeHomeRequest =
+                await this.storageBroker.SelectHomeRequestByIdAsync(homeRequestId);
+
+            ValidateStorageHomeRequest(maybeHomeRequest, homeRequestId);
+
+            return await this.storageBroker.DeleteHomeRequestAsync(maybeHomeRequest);
+        });
     }
 }
