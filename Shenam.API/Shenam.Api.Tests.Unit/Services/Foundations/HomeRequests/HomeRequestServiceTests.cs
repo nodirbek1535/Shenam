@@ -32,8 +32,18 @@ namespace Shenam.Api.Tests.Unit.Services.Foundations.HomeRequests
         }
 
         private static HomeRequest CreateRandomHomeRequest() =>
-            CreateHomeRequestFiller().Create(); 
+            CreateHomeRequestFiller().Create();
+        private static int GetRandomNumber() =>
+            new IntRange(min: 2, max: 9).GetValue();
 
+        private static IQueryable<HomeRequest> CreateRandomHomeRequests()
+        {
+            int randomCount = GetRandomNumber();
+
+            return Enumerable.Range(0, randomCount)
+                .Select(_ => CreateRandomHomeRequest())
+                .AsQueryable();
+        }
         private static SqlException GetSqlError()=>
             (SqlException)FormatterServices.GetUninitializedObject(typeof(SqlException));
 
